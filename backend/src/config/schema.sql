@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS habits (
   target_value INT NULL,
   target_unit VARCHAR(50) NULL,
   daily_target INT NULL,
-  trigger TEXT,
+  `trigger` TEXT,
   category VARCHAR(100) NOT NULL,
   priority VARCHAR(50),
   current_level INT DEFAULT 0,
