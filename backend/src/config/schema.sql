@@ -1,8 +1,5 @@
 -- Habit & Daily Tracker Database Schema
 
-CREATE DATABASE IF NOT EXISTS habit_tracker;
-USE habit_tracker;
-
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY AUTO_INCREMENT,

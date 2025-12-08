@@ -15,7 +15,7 @@ export async function createHabit(userId, habitData) {
   } = habitData;
 
   const result = await query(
-    `INSERT INTO habits (user_id, name, motivation, target_type, target_value, target_unit, daily_target, trigger, category, priority, start_date)
+    `INSERT INTO habits (user_id, name, motivation, target_type, target_value, target_unit, daily_target, \`trigger\`, category, priority, start_date)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [userId, name, motivation, target_type, target_value, target_unit, daily_target, trigger, category, priority, getToday()]
   );
@@ -49,7 +49,8 @@ export async function updateHabit(habitId, userId, updates) {
 
   for (const [key, value] of Object.entries(updates)) {
     if (allowedFields.includes(key)) {
-      fields.push(`${key} = ?`);
+      const fieldName = key === 'trigger' ? '`trigger`' : key;
+      fields.push(`${fieldName} = ?`);
       values.push(value);
     }
   }
