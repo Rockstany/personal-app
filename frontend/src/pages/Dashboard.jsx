@@ -8,6 +8,8 @@ import HabitList from '../components/HabitList';
 import TaskList from '../components/TaskList';
 import CreateHabit from '../components/CreateHabit';
 import CreateTask from '../components/CreateTask';
+import Reports from '../components/Reports';
+import SystemStatus from '../components/SystemStatus';
 import Toast from '../components/Toast';
 import '../styles/Dashboard.css';
 
@@ -237,6 +239,18 @@ function Dashboard() {
           >
             ✅ Daily Tasks
           </button>
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`tab ${activeTab === 'reports' ? 'active' : ''}`}
+          >
+            📊 Reports
+          </button>
+          <button
+            onClick={() => setActiveTab('system')}
+            className={`tab ${activeTab === 'system' ? 'active' : ''}`}
+          >
+            🖥️ System
+          </button>
         </div>
 
         {activeTab === 'habits' && (
@@ -344,6 +358,18 @@ function Dashboard() {
               showToast={showToast}
               viewMode={taskView}
             />
+          </div>
+        )}
+
+        {activeTab === 'reports' && (
+          <div className="content-wrapper">
+            <Reports showToast={showToast} />
+          </div>
+        )}
+
+        {activeTab === 'system' && (
+          <div className="content-wrapper">
+            <SystemStatus showToast={showToast} />
           </div>
         )}
       </div>

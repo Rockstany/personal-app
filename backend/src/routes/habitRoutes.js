@@ -13,5 +13,7 @@ router.post('/:id/complete', authenticate, habitController.completeHabitHandler)
 router.post('/:id/completions/sync', authenticate, habitController.syncCompletionHandler);
 router.get('/:id/calendar/:month', authenticate, habitController.getCalendarHandler);
 router.get('/:id/skip-days', authenticate, habitController.getSkipDaysHandler);
+router.get('/weekly-report', authenticate, habitController.getWeeklyReportHandler);
+router.get('/monthly-report', authenticate, habitController.getMonthlyReportHandler);
 
 export default router;

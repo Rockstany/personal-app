@@ -229,3 +229,125 @@ export async function getMonthlyCalendar(habitId, month) {
     [habitId, month]
   );
 }
+
+export async function getWeeklyReport(userId) {
+  const today = getToday();
+  const lastWeek = addDays(today, -7);
+
+  // Get completion stats for last 7 days
+  const completions = await query(
+    `SELECT DATE(hc.date) as date, COUNT(*) as completed
+     FROM habit_completions hc
+     JOIN habits h ON hc.habit_id = h.id
+     WHERE h.user_id = ? AND hc.status = 'done' AND hc.date >= ?
+     GROUP BY DATE(hc.date)
+     ORDER BY date ASC`,
+    [userId, lastWeek]
+  );
+
+  // Get total active habits
+  const [habitsCount] = await query(
+    `SELECT COUNT(*) as total FROM habits
+     WHERE user_id = ? AND deleted_at IS NULL AND graduated_date IS NULL`,
+    [userId]
+  );
+
+  // Calculate daily data for the week
+  const dailyData = [];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for (let i = 6; i >= 0; i--) {
+    const date = addDays(today, -i);
+    const dateStr = date;
+    const dayOfWeek = new Date(date).getDay();
+    const completion = completions.find(c => c.date.toISOString().split('T')[0] === dateStr);
+
+    dailyData.push({
+      date: dateStr,
+      dayName: dayNames[dayOfWeek],
+      completed: completion ? completion.completed : 0,
+      total: habitsCount[0].total,
+      status: completion && completion.completed >= habitsCount[0].total * 0.7 ? 'excellent' : 'fair'
+    });
+  }
+
+  const totalCompletions = completions.reduce((sum, c) => sum + c.completed, 0);
+  const completionRate = habitsCount[0].total > 0
+    ? Math.round((totalCompletions / (habitsCount[0].total * 7)) * 100)
+    : 0;
+
+  return {
+    completedDays: completions.length,
+    longestStreak: completions.length, // Simplified
+    completionRate: completionRate,
+    totalHabits: habitsCount[0].total,
+    dailyData: dailyData
+  };
+}
+
+export async function getMonthlyReport(userId, month) {
+  if (!month) {
+    const now = new Date();
+    month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  // Get completion stats for the month
+  const completions = await query(
+    `SELECT DATE(hc.date) as date, COUNT(*) as completed
+     FROM habit_completions hc
+     JOIN habits h ON hc.habit_id = h.id
+     WHERE h.user_id = ? AND DATE_FORMAT(hc.date, '%Y-%m') = ? AND hc.status = 'done'
+     GROUP BY DATE(hc.date)
+     ORDER BY date ASC`,
+    [userId, month]
+  );
+
+  // Get total habits count
+  const [habitsCount] = await query(
+    `SELECT COUNT(*) as total FROM habits
+     WHERE user_id = ? AND deleted_at IS NULL`,
+    [userId]
+  );
+
+  // Build calendar data (intensity heatmap)
+  const daysInMonth = new Date(month.split('-')[0], month.split('-')[1], 0).getDate();
+  const calendarData = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${month}-${String(day).padStart(2, '0')}`;
+    const completion = completions.find(c => {
+      const compDate = c.date.toISOString().split('T')[0];
+      return compDate === dateStr;
+    });
+
+    const completed = completion ? completion.completed : 0;
+    let intensity = 0;
+    if (completed > 0) {
+      const ratio = completed / habitsCount[0].total;
+      if (ratio >= 1) intensity = 4;
+      else if (ratio >= 0.75) intensity = 3;
+      else if (ratio >= 0.5) intensity = 2;
+      else intensity = 1;
+    }
+
+    calendarData.push({
+      date: dateStr,
+      dayNumber: day,
+      completed: completed,
+      intensity: intensity
+    });
+  }
+
+  const totalCompletions = completions.reduce((sum, c) => sum + c.completed, 0);
+  const perfectDays = completions.filter(c => c.completed >= habitsCount[0].total).length;
+  const averageDaily = completions.length > 0
+    ? Math.round(totalCompletions / completions.length)
+    : 0;
+
+  return {
+    totalCompletions: totalCompletions,
+    perfectDays: perfectDays,
+    averageDaily: averageDaily,
+    bestStreak: completions.length, // Simplified
+    calendarData: calendarData
+  };
+}

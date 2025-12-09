@@ -6,5 +6,6 @@ export const taskService = {
   getById: (id) => api.get(`/tasks/${id}`),
   update: (id, updates) => api.patch(`/tasks/${id}`, updates),
   complete: (id) => api.post(`/tasks/${id}/complete`),
-  delete: (id, reason) => api.delete(`/tasks/${id}`, { data: { reason } })
+  delete: (id, reason) => api.delete(`/tasks/${id}`, { data: { reason } }),
+  getReport: (endpoint) => api.get(`/tasks/${endpoint}`)
 };

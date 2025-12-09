@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { taskService } from '../services/taskService';
 import { getToday } from '../utils/levelCalculator';
+import '../styles/Form.css';
 
 function CreateTask({ onSuccess }) {
   const [formData, setFormData] = useState({
@@ -34,57 +35,66 @@ function CreateTask({ onSuccess }) {
   };
 
   return (
-    <div style={{ border: '1px solid #ddd', padding: '20px', marginBottom: '20px' }}>
-      <h3>Create New Task</h3>
+    <div className="form-container">
+      <h3 className="form-title">✅ Create New Task</h3>
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Task Name *</label>
+        <div className="form-group">
+          <label className="form-label">Task Name *</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="form-input"
+            placeholder="e.g., Complete project report"
           />
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Notes</label>
+        <div className="form-group">
+          <label className="form-label">Notes</label>
           <textarea
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            style={{ width: '100%', padding: '8px', minHeight: '60px' }}
+            className="form-textarea"
+            placeholder="Any additional details or context..."
           />
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Deadline *</label>
-          <input
-            type="date"
-            name="deadline"
-            value={formData.deadline}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Deadline *</label>
+            <input
+              type="date"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleChange}
+              required
+              className="form-input"
+            />
+            <p className="form-help-text">When should this task be completed?</p>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Max Extensions</label>
+            <input
+              type="number"
+              name="max_extensions"
+              value={formData.max_extensions}
+              onChange={handleChange}
+              min="0"
+              max="10"
+              className="form-input"
+            />
+            <p className="form-help-text">How many times can you extend?</p>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Max Extensions</label>
-          <input
-            type="number"
-            name="max_extensions"
-            value={formData.max_extensions}
-            onChange={handleChange}
-            min="0"
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" style={{ padding: '10px 20px' }}>Create Task</button>
+        {error && <div className="error-message">❌ {error}</div>}
+        <button type="submit" className="form-submit-btn">
+          ✨ Create Task
+        </button>
       </form>
     </div>
   );

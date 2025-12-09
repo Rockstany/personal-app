@@ -67,3 +67,24 @@ export async function deleteTaskHandler(req, res) {
     res.status(500).json({ error: 'Failed to delete task' });
   }
 }
+
+export async function getWeeklyReportHandler(req, res) {
+  try {
+    const report = await taskModel.getWeeklyReport(req.userId);
+    res.json(report);
+  } catch (error) {
+    console.error('Get weekly report error:', error);
+    res.status(500).json({ error: 'Failed to fetch weekly report' });
+  }
+}
+
+export async function getMonthlyReportHandler(req, res) {
+  try {
+    const { month } = req.query;
+    const report = await taskModel.getMonthlyReport(req.userId, month);
+    res.json(report);
+  } catch (error) {
+    console.error('Get monthly report error:', error);
+    res.status(500).json({ error: 'Failed to fetch monthly report' });
+  }
+}

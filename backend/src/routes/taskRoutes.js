@@ -10,5 +10,7 @@ router.get('/:id', authenticate, taskController.getTaskHandler);
 router.patch('/:id', authenticate, taskController.updateTaskHandler);
 router.post('/:id/complete', authenticate, taskController.completeTaskHandler);
 router.delete('/:id', authenticate, taskController.deleteTaskHandler);
+router.get('/weekly-report', authenticate, taskController.getWeeklyReportHandler);
+router.get('/monthly-report', authenticate, taskController.getMonthlyReportHandler);
 
 export default router;

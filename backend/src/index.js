@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import habitRoutes from './routes/habitRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import systemRoutes from './routes/systemRoutes.js';
 import { startAutoNotDoneJob } from './jobs/autoNotDone.js';
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/system', systemRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

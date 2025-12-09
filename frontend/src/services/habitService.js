@@ -9,5 +9,6 @@ export const habitService = {
   complete: (id, status, value, skipDayId) => api.post(`/habits/${id}/complete`, { status, value, skipDayId }),
   syncCompletion: (id, data) => api.post(`/habits/${id}/completions/sync`, data),
   getCalendar: (id, month) => api.get(`/habits/${id}/calendar/${month}`),
-  getSkipDays: (id) => api.get(`/habits/${id}/skip-days`)
+  getSkipDays: (id) => api.get(`/habits/${id}/skip-days`),
+  getReport: (endpoint) => api.get(`/habits/${endpoint}`)
 };
