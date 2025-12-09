@@ -24,9 +24,9 @@
 }
 
 .update-content {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 1rem 2rem;
+  padding: 1rem 0.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
