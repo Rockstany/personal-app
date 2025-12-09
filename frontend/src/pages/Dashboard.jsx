@@ -8,6 +8,7 @@ import HabitList from '../components/HabitList';
 import TaskList from '../components/TaskList';
 import CreateHabit from '../components/CreateHabit';
 import CreateTask from '../components/CreateTask';
+import '../styles/Dashboard.css';
 
 function Dashboard() {
   const [habits, setHabits] = useState([]);
@@ -15,11 +16,27 @@ function Dashboard() {
   const [showCreateHabit, setShowCreateHabit] = useState(false);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [activeTab, setActiveTab] = useState('habits');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadData();
     syncOfflineData();
+
+    // Listen for online/offline status
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncOfflineData();
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const loadData = async () => {
@@ -41,77 +58,87 @@ function Dashboard() {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h1>Habit & Daily Tracker</h1>
-        <button onClick={handleLogout}>Logout</button>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <button
-          onClick={() => setActiveTab('habits')}
-          style={{
-            padding: '10px 20px',
-            marginRight: '10px',
-            backgroundColor: activeTab === 'habits' ? '#4CAF50' : '#ddd'
-          }}
-        >
-          Habits
-        </button>
-        <button
-          onClick={() => setActiveTab('tasks')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: activeTab === 'tasks' ? '#4CAF50' : '#ddd'
-          }}
-        >
-          Daily Tasks
-        </button>
-      </div>
-
-      {activeTab === 'habits' && (
-        <div>
-          <button
-            onClick={() => setShowCreateHabit(!showCreateHabit)}
-            style={{ padding: '10px 20px', marginBottom: '20px' }}
-          >
-            {showCreateHabit ? 'Cancel' : 'Create New Habit'}
-          </button>
-
-          {showCreateHabit && (
-            <CreateHabit
-              onSuccess={() => {
-                setShowCreateHabit(false);
-                loadData();
-              }}
-            />
-          )}
-
-          <HabitList habits={habits} onUpdate={loadData} />
+    <div className="dashboard">
+      <header className="header">
+        <div className="header-content">
+          <div className="logo">
+            <div className="logo-icon">🎯</div>
+            <div className="logo-text">
+              <h1>Habit Tracker</h1>
+              <p>Build better habits, track your progress</p>
+            </div>
+          </div>
+          <div className="header-actions">
+            <div className={`online-status ${isOnline ? 'online' : 'offline'}`}>
+              {isOnline ? '🟢 Online' : '🔴 Offline'}
+            </div>
+            <button onClick={handleLogout} className="logout-btn">
+              🚪 Logout
+            </button>
+          </div>
         </div>
-      )}
+      </header>
 
-      {activeTab === 'tasks' && (
-        <div>
+      <div className="container">
+        <div className="tabs">
           <button
-            onClick={() => setShowCreateTask(!showCreateTask)}
-            style={{ padding: '10px 20px', marginBottom: '20px' }}
+            onClick={() => setActiveTab('habits')}
+            className={`tab ${activeTab === 'habits' ? 'active' : ''}`}
           >
-            {showCreateTask ? 'Cancel' : 'Create New Task'}
+            🎯 Habits
           </button>
-
-          {showCreateTask && (
-            <CreateTask
-              onSuccess={() => {
-                setShowCreateTask(false);
-                loadData();
-              }}
-            />
-          )}
-
-          <TaskList tasks={tasks} onUpdate={loadData} />
+          <button
+            onClick={() => setActiveTab('tasks')}
+            className={`tab ${activeTab === 'tasks' ? 'active' : ''}`}
+          >
+            ✅ Daily Tasks
+          </button>
         </div>
-      )}
+
+        {activeTab === 'habits' && (
+          <div>
+            <button
+              onClick={() => setShowCreateHabit(!showCreateHabit)}
+              className="create-btn"
+            >
+              {showCreateHabit ? '❌ Cancel' : '➕ Create New Habit'}
+            </button>
+
+            {showCreateHabit && (
+              <CreateHabit
+                onSuccess={() => {
+                  setShowCreateHabit(false);
+                  loadData();
+                }}
+              />
+            )}
+
+            <HabitList habits={habits} onUpdate={loadData} />
+          </div>
+        )}
+
+        {activeTab === 'tasks' && (
+          <div>
+            <button
+              onClick={() => setShowCreateTask(!showCreateTask)}
+              className="create-btn"
+            >
+              {showCreateTask ? '❌ Cancel' : '➕ Create New Task'}
+            </button>
+
+            {showCreateTask && (
+              <CreateTask
+                onSuccess={() => {
+                  setShowCreateTask(false);
+                  loadData();
+                }}
+              />
+            )}
+
+            <TaskList tasks={tasks} onUpdate={loadData} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

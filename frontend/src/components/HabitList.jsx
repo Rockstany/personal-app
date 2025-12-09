@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { habitService } from '../services/habitService';
 import { saveOfflineCompletion } from '../services/offlineSync';
 import { getToday } from '../utils/levelCalculator';
+import '../styles/HabitCard.css';
 
 function HabitList({ habits, onUpdate }) {
   const [selectedHabit, setSelectedHabit] = useState(null);
@@ -14,18 +15,34 @@ function HabitList({ habits, onUpdate }) {
     return acc;
   }, {});
 
+  const getLevelColor = (level) => {
+    const colors = [
+      '#95a5a6', // Level 0 - Gray
+      '#3498db', // Level 1 - Blue
+      '#9b59b6', // Level 2 - Purple
+      '#e74c3c', // Level 3 - Red
+      '#f39c12', // Level 4 - Orange
+      '#27ae60', // Level 5 - Green
+      '#1abc9c', // Level 6 - Teal
+      '#e67e22', // Level 7 - Dark Orange
+      '#c0392b', // Level 8 - Dark Red
+      '#f1c40f', // Level 9 - Gold
+    ];
+    return colors[level] || colors[0];
+  };
+
   const handleComplete = async (habitId, status, value = null, skipDayId = null) => {
     try {
       if (!navigator.onLine) {
         await saveOfflineCompletion(habitId, getToday(), status, value);
-        alert('Saved offline. Will sync when connection is restored.');
+        alert('💾 Saved offline! Will sync when you\'re back online.');
       } else {
         await habitService.complete(habitId, status, value, skipDayId);
       }
       onUpdate();
     } catch (error) {
       console.error('Error completing habit:', error);
-      alert('Failed to complete habit');
+      alert('❌ Failed to complete habit');
     }
   };
 
@@ -37,7 +54,7 @@ function HabitList({ habits, onUpdate }) {
         onUpdate();
       } catch (error) {
         console.error('Error deleting habit:', error);
-        alert('Failed to delete habit');
+        alert('❌ Failed to delete habit');
       }
     }
   };
@@ -52,71 +69,100 @@ function HabitList({ habits, onUpdate }) {
     }
   };
 
+  if (habits.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">🎯</div>
+        <p className="empty-text">No habits yet. Create your first habit to get started!</p>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <h2>Your Habits</h2>
       {Object.keys(groupedByLevel)
         .sort((a, b) => b - a)
         .map((level) => (
-          <div key={level} style={{ marginBottom: '30px' }}>
-            <h3>Level {level}</h3>
+          <div key={level}>
+            <h2 className="level-section-title" style={{ '--level-color': getLevelColor(parseInt(level)) }}>
+              🏆 Level {level}
+            </h2>
             {groupedByLevel[level].map((habit) => (
               <div
                 key={habit.id}
-                style={{
-                  border: '1px solid #ddd',
-                  padding: '15px',
-                  marginBottom: '10px',
-                  borderRadius: '5px'
-                }}
+                className="habit-card"
+                style={{ '--level-color': getLevelColor(habit.current_level) }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                  <div>
-                    <h4 style={{ margin: '0 0 10px 0' }}>{habit.name}</h4>
-                    <p style={{ margin: '5px 0', fontSize: '0.9em', color: '#666' }}>
-                      <strong>Category:</strong> {habit.category} | <strong>Level:</strong> {habit.current_level}
-                    </p>
-                    {habit.motivation && (
-                      <p style={{ margin: '5px 0', fontSize: '0.9em', fontStyle: 'italic' }}>
-                        Why: {habit.motivation}
-                      </p>
-                    )}
-                    {habit.trigger && (
-                      <p style={{ margin: '5px 0', fontSize: '0.9em' }}>
-                        <strong>Trigger:</strong> {habit.trigger}
-                      </p>
-                    )}
-                    {habit.target_type === 'numeric' && (
-                      <p style={{ margin: '5px 0', fontSize: '0.9em' }}>
-                        <strong>Progress:</strong> {habit.current_progress || 0} / {habit.target_value} {habit.target_unit}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => handleComplete(habit.id, 'done')}
-                      style={{ padding: '5px 15px', marginRight: '5px', backgroundColor: '#4CAF50', color: 'white' }}
-                    >
-                      Done
-                    </button>
-                    <button
-                      onClick={() => loadSkipDays(habit.id)}
-                      style={{ padding: '5px 15px', marginRight: '5px', backgroundColor: '#FFA500', color: 'white' }}
-                    >
-                      Skip
-                    </button>
-                    <button
-                      onClick={() => handleDelete(habit.id)}
-                      style={{ padding: '5px 15px', backgroundColor: '#f44336', color: 'white' }}
-                    >
-                      Delete
-                    </button>
+                <div className="habit-header">
+                  <div className="habit-title-section">
+                    <div className="habit-level-badge">
+                      Level {habit.current_level}
+                    </div>
+                    <h3 className="habit-name">{habit.name}</h3>
+                    <span className="habit-category">📂 {habit.category}</span>
                   </div>
                 </div>
 
+                <div className="habit-meta">
+                  {habit.motivation && (
+                    <div className="habit-motivation">
+                      💭 Why: {habit.motivation}
+                    </div>
+                  )}
+
+                  {habit.trigger && (
+                    <div className="habit-meta-item">
+                      ⚡ Trigger: {habit.trigger}
+                    </div>
+                  )}
+
+                  {habit.target_type === 'numeric' && (
+                    <div className="habit-progress">
+                      <div className="habit-meta-item">
+                        📊 Progress: {habit.current_progress || 0} / {habit.target_value} {habit.target_unit}
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${Math.min((habit.current_progress / habit.target_value) * 100, 100)}%`
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {habit.target_type === 'duration_90' && (
+                    <div className="habit-meta-item">
+                      📅 Duration: 90-day challenge
+                    </div>
+                  )}
+                </div>
+
+                <div className="habit-actions">
+                  <button
+                    onClick={() => handleComplete(habit.id, 'done')}
+                    className="btn btn-done"
+                  >
+                    ✅ Done
+                  </button>
+                  <button
+                    onClick={() => loadSkipDays(habit.id)}
+                    className="btn btn-skip"
+                  >
+                    ⏭️ Skip
+                  </button>
+                  <button
+                    onClick={() => handleDelete(habit.id)}
+                    className="btn btn-delete"
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+
                 {selectedHabit === habit.id && skipDays.length > 0 && (
-                  <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#fffacd' }}>
-                    <p><strong>Available Skip Days:</strong></p>
+                  <div className="skip-days-panel">
+                    <p className="skip-days-title">✨ Available Skip Days:</p>
                     {skipDays.map((skip) => (
                       <button
                         key={skip.id}
@@ -124,11 +170,20 @@ function HabitList({ habits, onUpdate }) {
                           handleComplete(habit.id, 'skip', null, skip.id);
                           setSelectedHabit(null);
                         }}
-                        style={{ padding: '5px 10px', marginRight: '5px' }}
+                        className="skip-day-btn"
                       >
-                        Use Skip (Level {skip.level_earned_at}, Expires: {skip.expiry_date})
+                        Use Skip (Level {skip.level_earned_at}) - Expires: {skip.expiry_date}
                       </button>
                     ))}
+                  </div>
+                )}
+
+                {selectedHabit === habit.id && skipDays.length === 0 && (
+                  <div className="skip-days-panel">
+                    <p className="skip-days-title">😢 No skip days available</p>
+                    <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                      Complete more days to earn skip days!
+                    </p>
                   </div>
                 )}
               </div>

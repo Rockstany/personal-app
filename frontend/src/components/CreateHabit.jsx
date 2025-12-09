@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { habitService } from '../services/habitService';
+import '../styles/Form.css';
 
 function CreateHabit({ onSuccess }) {
   const [formData, setFormData] = useState({
@@ -47,125 +48,140 @@ function CreateHabit({ onSuccess }) {
   };
 
   return (
-    <div style={{ border: '1px solid #ddd', padding: '20px', marginBottom: '20px' }}>
-      <h3>Create New Habit</h3>
+    <div className="form-container">
+      <h3 className="form-title">🎯 Create New Habit</h3>
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Name *</label>
+        <div className="form-group">
+          <label className="form-label">Name *</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="form-input"
+            placeholder="e.g., Read every day"
           />
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Motivation / Why</label>
+        <div className="form-group">
+          <label className="form-label">Motivation / Why</label>
           <textarea
             name="motivation"
             value={formData.motivation}
             onChange={handleChange}
-            style={{ width: '100%', padding: '8px', minHeight: '60px' }}
+            className="form-textarea"
+            placeholder="Why is this habit important to you?"
           />
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Target Type *</label>
+        <div className="form-group">
+          <label className="form-label">Target Type *</label>
           <select
             name="target_type"
             value={formData.target_type}
             onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
+            className="form-select"
           >
-            <option value="duration_90">90-Day Duration</option>
+            <option value="duration_90">90-Day Duration Challenge</option>
             <option value="numeric">Numeric Target</option>
           </select>
+          <p className="form-help-text">
+            {formData.target_type === 'duration_90'
+              ? '📅 Complete this habit for 90 consecutive days'
+              : '🎯 Set a specific number goal to achieve'}
+          </p>
         </div>
 
         {formData.target_type === 'numeric' && (
-          <>
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', marginBottom: '5px' }}>Target Value *</label>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Target Value *</label>
               <input
                 type="number"
                 name="target_value"
                 value={formData.target_value}
                 onChange={handleChange}
                 required={formData.target_type === 'numeric'}
-                style={{ width: '100%', padding: '8px' }}
+                className="form-input"
+                placeholder="100"
               />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', marginBottom: '5px' }}>Target Unit</label>
+            <div className="form-group">
+              <label className="form-label">Target Unit</label>
               <input
                 type="text"
                 name="target_unit"
                 value={formData.target_unit}
                 onChange={handleChange}
-                placeholder="e.g., pages, minutes, reps"
-                style={{ width: '100%', padding: '8px' }}
+                placeholder="pages, minutes, reps"
+                className="form-input"
               />
             </div>
-          </>
+          </div>
         )}
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Daily Target</label>
-          <input
-            type="number"
-            name="daily_target"
-            value={formData.daily_target}
-            onChange={handleChange}
-            placeholder="5, 10, 15..."
-            style={{ width: '100%', padding: '8px' }}
-          />
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Daily Target</label>
+            <input
+              type="number"
+              name="daily_target"
+              value={formData.daily_target}
+              onChange={handleChange}
+              placeholder="5, 10, 15..."
+              className="form-input"
+            />
+            <p className="form-help-text">How much per day? (optional)</p>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Trigger</label>
+            <input
+              type="text"
+              name="trigger"
+              value={formData.trigger}
+              onChange={handleChange}
+              placeholder="After breakfast, Before bed..."
+              className="form-input"
+            />
+          </div>
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Trigger</label>
-          <input
-            type="text"
-            name="trigger"
-            value={formData.trigger}
-            onChange={handleChange}
-            placeholder="What triggers this habit?"
-            style={{ width: '100%', padding: '8px' }}
-          />
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Category *</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              placeholder="Health, Learning, Work..."
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Priority</label>
+            <select
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="form-select"
+            >
+              <option value="">None</option>
+              <option value="high">🔴 High</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Category *</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-            placeholder="Health, Learning, Work..."
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Priority</label>
-          <select
-            name="priority"
-            value={formData.priority}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-          >
-            <option value="">None</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" style={{ padding: '10px 20px' }}>Create Habit</button>
+        {error && <div className="error-message">❌ {error}</div>}
+        <button type="submit" className="form-submit-btn">
+          ✨ Create Habit
+        </button>
       </form>
     </div>
   );
