@@ -19,6 +19,8 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('habits');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [toast, setToast] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const navigate = useNavigate();
 
   const showToast = (message, type = 'success') => {
@@ -58,6 +60,36 @@ function Dashboard() {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await loadData();
+      showToast('✅ Data refreshed!', 'success');
+    } catch (error) {
+      showToast('❌ Failed to refresh data', 'error');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleSync = async () => {
+    if (!isOnline) {
+      showToast('⚠️ Cannot sync while offline', 'warning');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      await syncOfflineData();
+      await loadData();
+      showToast('🔄 Data synced successfully!', 'success');
+    } catch (error) {
+      showToast('❌ Failed to sync data', 'error');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleLogout = () => {
     authService.logout();
     navigate('/login');
@@ -78,6 +110,20 @@ function Dashboard() {
             <div className={`online-status ${isOnline ? 'online' : 'offline'}`}>
               {isOnline ? '🟢 Online' : '🔴 Offline'}
             </div>
+            <button
+              onClick={handleRefresh}
+              className="action-btn"
+              disabled={isRefreshing}
+            >
+              {isRefreshing ? '⏳' : '🔄'} Refresh
+            </button>
+            <button
+              onClick={handleSync}
+              className="action-btn"
+              disabled={!isOnline || isSyncing}
+            >
+              {isSyncing ? '⏳' : '🔄'} Sync
+            </button>
             <button onClick={handleLogout} className="logout-btn">
               🚪 Logout
             </button>
