@@ -9,24 +9,29 @@ export async function getSystemStatusHandler(req, res) {
     const cpuUsage = process.cpuUsage();
 
     // Get database statistics
-    const [userCount] = await query('SELECT COUNT(*) as count FROM users');
-    const [habitCount] = await query('SELECT COUNT(*) as count FROM habits WHERE deleted_at IS NULL');
-    const [taskCount] = await query('SELECT COUNT(*) as count FROM daily_tasks WHERE deleted_at IS NULL');
-    const [completionCount] = await query('SELECT COUNT(*) as count FROM habit_completions');
+    const userCountResult = await query('SELECT COUNT(*) as count FROM users');
+    const habitCountResult = await query('SELECT COUNT(*) as count FROM habits WHERE deleted_at IS NULL');
+    const taskCountResult = await query('SELECT COUNT(*) as count FROM daily_tasks WHERE deleted_at IS NULL');
+    const completionCountResult = await query('SELECT COUNT(*) as count FROM habit_completions');
+
+    const userCount = userCountResult[0]?.count || 0;
+    const habitCount = habitCountResult[0]?.count || 0;
+    const taskCount = taskCountResult[0]?.count || 0;
+    const completionCount = completionCountResult[0]?.count || 0;
 
     // Get recent activity (last 10 actions)
     const recentActivity = await query(`
-      SELECT 'habit' as type, name, created_at as timestamp
-      FROM habits
-      WHERE deleted_at IS NULL
-      ORDER BY created_at DESC
-      LIMIT 5
+      (SELECT 'habit' as type, name, created_at as timestamp
+       FROM habits
+       WHERE deleted_at IS NULL
+       ORDER BY created_at DESC
+       LIMIT 5)
       UNION ALL
-      SELECT 'task' as type, name, created_at as timestamp
-      FROM daily_tasks
-      WHERE deleted_at IS NULL
-      ORDER BY created_at DESC
-      LIMIT 5
+      (SELECT 'task' as type, name, created_at as timestamp
+       FROM daily_tasks
+       WHERE deleted_at IS NULL
+       ORDER BY created_at DESC
+       LIMIT 5)
       ORDER BY timestamp DESC
       LIMIT 10
     `);
@@ -50,10 +55,10 @@ export async function getSystemStatusHandler(req, res) {
       },
       database: {
         status: 'connected',
-        totalUsers: userCount[0].count,
-        totalHabits: habitCount[0].count,
-        totalTasks: taskCount[0].count,
-        completions: completionCount[0].count
+        totalUsers: userCount,
+        totalHabits: habitCount,
+        totalTasks: taskCount,
+        completions: completionCount
       },
       api: {
         status: 'healthy',
