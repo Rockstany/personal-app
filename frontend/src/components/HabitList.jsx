@@ -4,7 +4,7 @@ import { saveOfflineCompletion } from '../services/offlineSync';
 import { getToday } from '../utils/levelCalculator';
 import '../styles/HabitCard.css';
 
-function HabitList({ habits, onUpdate }) {
+function HabitList({ habits, onUpdate, showToast }) {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [skipDays, setSkipDays] = useState([]);
 
@@ -35,14 +35,19 @@ function HabitList({ habits, onUpdate }) {
     try {
       if (!navigator.onLine) {
         await saveOfflineCompletion(habitId, getToday(), status, value);
-        alert('💾 Saved offline! Will sync when you\'re back online.');
+        showToast('💾 Saved offline! Will sync when online.', 'info');
       } else {
         await habitService.complete(habitId, status, value, skipDayId);
+        if (status === 'done') {
+          showToast('🎉 Great job! Habit marked as done!', 'success');
+        } else if (status === 'skip') {
+          showToast('⏭️ Skip day used successfully', 'info');
+        }
       }
       onUpdate();
     } catch (error) {
       console.error('Error completing habit:', error);
-      alert('❌ Failed to complete habit');
+      showToast('❌ Failed to complete habit', 'error');
     }
   };
 
@@ -51,10 +56,11 @@ function HabitList({ habits, onUpdate }) {
     if (reason) {
       try {
         await habitService.delete(habitId, reason);
+        showToast('🗑️ Habit deleted successfully', 'info');
         onUpdate();
       } catch (error) {
         console.error('Error deleting habit:', error);
-        alert('❌ Failed to delete habit');
+        showToast('❌ Failed to delete habit', 'error');
       }
     }
   };

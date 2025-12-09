@@ -8,6 +8,7 @@ import HabitList from '../components/HabitList';
 import TaskList from '../components/TaskList';
 import CreateHabit from '../components/CreateHabit';
 import CreateTask from '../components/CreateTask';
+import Toast from '../components/Toast';
 import '../styles/Dashboard.css';
 
 function Dashboard() {
@@ -17,7 +18,12 @@ function Dashboard() {
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [activeTab, setActiveTab] = useState('habits');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [toast, setToast] = useState(null);
   const navigate = useNavigate();
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+  };
 
   useEffect(() => {
     loadData();
@@ -109,11 +115,12 @@ function Dashboard() {
                 onSuccess={() => {
                   setShowCreateHabit(false);
                   loadData();
+                  showToast('🎉 Habit created successfully!', 'success');
                 }}
               />
             )}
 
-            <HabitList habits={habits} onUpdate={loadData} />
+            <HabitList habits={habits} onUpdate={loadData} showToast={showToast} />
           </div>
         )}
 
@@ -135,10 +142,18 @@ function Dashboard() {
               />
             )}
 
-            <TaskList tasks={tasks} onUpdate={loadData} />
+            <TaskList tasks={tasks} onUpdate={loadData} showToast={showToast} />
           </div>
         )}
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
