@@ -76,11 +76,16 @@ function Dashboard() {
     };
   }, []);
 
+  // Reload data when view changes
+  useEffect(() => {
+    loadData();
+  }, [habitView, taskView]);
+
   const loadData = async () => {
     try {
       const [habitsRes, tasksRes] = await Promise.all([
-        habitService.getAll(),
-        taskService.getAll('today')
+        habitService.getAll(habitView),
+        taskService.getAll(taskView)
       ]);
       setHabits(habitsRes.data);
       setTasks(tasksRes.data);
@@ -277,12 +282,7 @@ function Dashboard() {
             )}
 
             <HabitList
-              habits={habits.filter(h => {
-                if (habitView === 'active') return !h.deleted_at && !h.graduated_date;
-                if (habitView === 'completed') return h.graduated_date !== null;
-                if (habitView === 'deleted') return h.deleted_at !== null;
-                return true;
-              })}
+              habits={habits}
               onUpdate={loadData}
               showToast={showToast}
               viewMode={habitView}
@@ -318,6 +318,12 @@ function Dashboard() {
                   className={`filter-btn ${taskView === 'completed' ? 'active' : ''}`}
                 >
                   ✅ Completed
+                </button>
+                <button
+                  onClick={() => setTaskView('deleted')}
+                  className={`filter-btn ${taskView === 'deleted' ? 'active' : ''}`}
+                >
+                  🗑️ Deleted
                 </button>
               </div>
             </div>

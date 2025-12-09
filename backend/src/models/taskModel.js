@@ -24,6 +24,11 @@ export async function getTasks(userId, filter = 'today') {
            WHERE user_id = ? AND deadline = ? AND completed_at IS NULL AND deleted_at IS NULL
            ORDER BY deadline ASC`;
     params = [userId, today];
+  } else if (filter === 'upcoming') {
+    sql = `SELECT * FROM daily_tasks
+           WHERE user_id = ? AND deadline > ? AND completed_at IS NULL AND deleted_at IS NULL
+           ORDER BY deadline ASC`;
+    params = [userId, today];
   } else if (filter === 'completed') {
     sql = `SELECT * FROM daily_tasks
            WHERE user_id = ? AND completed_at IS NOT NULL

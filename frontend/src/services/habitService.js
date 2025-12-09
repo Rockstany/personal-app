@@ -2,7 +2,7 @@ import api from './api';
 
 export const habitService = {
   create: (habitData) => api.post('/habits', habitData),
-  getAll: () => api.get('/habits'),
+  getAll: (view = 'active') => api.get('/habits', { params: { view } }),
   getById: (id) => api.get(`/habits/${id}`),
   update: (id, updates) => api.patch(`/habits/${id}`, updates),
   delete: (id, reason) => api.delete(`/habits/${id}`, { data: { reason } }),

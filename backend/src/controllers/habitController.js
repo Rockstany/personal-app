@@ -13,7 +13,8 @@ export async function createHabitHandler(req, res) {
 
 export async function getHabitsHandler(req, res) {
   try {
-    const habits = await habitModel.getHabitsByUser(req.userId);
+    const { view } = req.query;
+    const habits = await habitModel.getHabitsByUser(req.userId, view);
     res.json(habits);
   } catch (error) {
     console.error('Get habits error:', error);

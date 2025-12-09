@@ -23,10 +23,23 @@ export async function createHabit(userId, habitData) {
   return result.insertId;
 }
 
-export async function getHabitsByUser(userId) {
+export async function getHabitsByUser(userId, view = 'active') {
+  let whereClause = 'WHERE user_id = ?';
+
+  if (view === 'active') {
+    whereClause += ' AND deleted_at IS NULL AND graduated_date IS NULL';
+  } else if (view === 'completed') {
+    whereClause += ' AND graduated_date IS NOT NULL';
+  } else if (view === 'deleted') {
+    whereClause += ' AND deleted_at IS NOT NULL';
+  } else {
+    // Default to active if invalid view
+    whereClause += ' AND deleted_at IS NULL AND graduated_date IS NULL';
+  }
+
   return await query(
     `SELECT * FROM habits
-     WHERE user_id = ? AND deleted_at IS NULL
+     ${whereClause}
      ORDER BY current_level DESC, created_at ASC`,
     [userId]
   );
