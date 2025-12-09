@@ -278,9 +278,9 @@ function Dashboard() {
 
             <HabitList
               habits={habits.filter(h => {
-                if (habitView === 'active') return h.status === 'active';
-                if (habitView === 'completed') return h.status === 'completed';
-                if (habitView === 'deleted') return h.status === 'deleted';
+                if (habitView === 'active') return !h.deleted_at && !h.graduated_date;
+                if (habitView === 'completed') return h.graduated_date !== null;
+                if (habitView === 'deleted') return h.deleted_at !== null;
                 return true;
               })}
               onUpdate={loadData}

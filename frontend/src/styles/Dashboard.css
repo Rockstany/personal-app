@@ -448,6 +448,22 @@
   .view-controls {
     flex-direction: column;
     align-items: stretch;
+    gap: 1rem;
+  }
+
+  .view-filter {
+    width: 100%;
+    justify-content: center;
+    order: -1;
+    margin-bottom: 0.5rem;
+  }
+
+  .filter-btn {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+    justify-content: center;
+    min-width: 0;
   }
 
   .footer {
@@ -461,18 +477,6 @@
 
   .footer-phone {
     font-size: 1rem;
-  }
-
-  .view-filter {
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .filter-btn {
-    flex: 1;
-    padding: 0.6rem 0.8rem;
-    font-size: 0.85rem;
-    justify-content: center;
   }
 
   .create-btn {
