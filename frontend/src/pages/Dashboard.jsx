@@ -22,6 +22,8 @@ function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [habitView, setHabitView] = useState('active'); // 'active', 'completed', 'deleted'
+  const [taskView, setTaskView] = useState('today'); // 'today', 'upcoming', 'completed'
   const navigate = useNavigate();
 
   const showToast = (message, type = 'success') => {
@@ -233,13 +235,36 @@ function Dashboard() {
         </div>
 
         {activeTab === 'habits' && (
-          <div>
-            <button
-              onClick={() => setShowCreateHabit(!showCreateHabit)}
-              className="create-btn"
-            >
-              {showCreateHabit ? '❌ Cancel' : '➕ Create New Habit'}
-            </button>
+          <div className="content-wrapper">
+            <div className="view-controls">
+              <button
+                onClick={() => setShowCreateHabit(!showCreateHabit)}
+                className="create-btn"
+              >
+                {showCreateHabit ? '❌ Cancel' : '➕ Create New Habit'}
+              </button>
+
+              <div className="view-filter">
+                <button
+                  onClick={() => setHabitView('active')}
+                  className={`filter-btn ${habitView === 'active' ? 'active' : ''}`}
+                >
+                  📋 Active
+                </button>
+                <button
+                  onClick={() => setHabitView('completed')}
+                  className={`filter-btn ${habitView === 'completed' ? 'active' : ''}`}
+                >
+                  ✅ Completed
+                </button>
+                <button
+                  onClick={() => setHabitView('deleted')}
+                  className={`filter-btn ${habitView === 'deleted' ? 'active' : ''}`}
+                >
+                  🗑️ Deleted
+                </button>
+              </div>
+            </div>
 
             {showCreateHabit && (
               <CreateHabit
@@ -251,32 +276,78 @@ function Dashboard() {
               />
             )}
 
-            <HabitList habits={habits} onUpdate={loadData} showToast={showToast} />
+            <HabitList
+              habits={habits.filter(h => {
+                if (habitView === 'active') return h.status === 'active';
+                if (habitView === 'completed') return h.status === 'completed';
+                if (habitView === 'deleted') return h.status === 'deleted';
+                return true;
+              })}
+              onUpdate={loadData}
+              showToast={showToast}
+              viewMode={habitView}
+            />
           </div>
         )}
 
         {activeTab === 'tasks' && (
-          <div>
-            <button
-              onClick={() => setShowCreateTask(!showCreateTask)}
-              className="create-btn"
-            >
-              {showCreateTask ? '❌ Cancel' : '➕ Create New Task'}
-            </button>
+          <div className="content-wrapper">
+            <div className="view-controls">
+              <button
+                onClick={() => setShowCreateTask(!showCreateTask)}
+                className="create-btn"
+              >
+                {showCreateTask ? '❌ Cancel' : '➕ Create New Task'}
+              </button>
+
+              <div className="view-filter">
+                <button
+                  onClick={() => setTaskView('today')}
+                  className={`filter-btn ${taskView === 'today' ? 'active' : ''}`}
+                >
+                  📅 Today
+                </button>
+                <button
+                  onClick={() => setTaskView('upcoming')}
+                  className={`filter-btn ${taskView === 'upcoming' ? 'active' : ''}`}
+                >
+                  📆 Upcoming
+                </button>
+                <button
+                  onClick={() => setTaskView('completed')}
+                  className={`filter-btn ${taskView === 'completed' ? 'active' : ''}`}
+                >
+                  ✅ Completed
+                </button>
+              </div>
+            </div>
 
             {showCreateTask && (
               <CreateTask
                 onSuccess={() => {
                   setShowCreateTask(false);
                   loadData();
+                  showToast('🎉 Task created successfully!', 'success');
                 }}
               />
             )}
 
-            <TaskList tasks={tasks} onUpdate={loadData} showToast={showToast} />
+            <TaskList
+              tasks={tasks}
+              onUpdate={loadData}
+              showToast={showToast}
+              viewMode={taskView}
+            />
           </div>
         )}
       </div>
+
+      <footer className="footer">
+        <div className="footer-contact">Contact us</div>
+        <a href="tel:7899015086" className="footer-phone">
+          📞 7899015086
+        </a>
+      </footer>
 
       {toast && (
         <Toast
