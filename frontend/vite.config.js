@@ -31,6 +31,8 @@ export default defineConfig({
         ]
       },
       workbox: {
+        skipWaiting: false, // Don't auto-activate, wait for user confirmation
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\/api\/.*/i,
@@ -47,6 +49,10 @@ export default defineConfig({
             }
           }
         ]
+      },
+      // Add message handler for skip waiting
+      injectManifest: {
+        injectionPoint: undefined
       }
     })
   ],

@@ -3,6 +3,94 @@
   background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFC837 100%);
 }
 
+.update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.update-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+}
+
+.update-icon {
+  font-size: 2rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.update-text {
+  flex: 1;
+}
+
+.update-text strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.update-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.update-btn {
+  background: white;
+  color: #44A08D;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.update-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dismiss-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dismiss-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .header {
   background: white;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -194,6 +282,34 @@
 }
 
 @media (max-width: 768px) {
+  .update-content {
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .update-icon {
+    font-size: 1.5rem;
+  }
+
+  .update-text strong {
+    font-size: 1rem;
+  }
+
+  .update-text p {
+    font-size: 0.85rem;
+  }
+
+  .update-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .dismiss-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+
   .header-content {
     padding: 1rem;
     flex-direction: column;

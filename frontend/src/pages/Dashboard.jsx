@@ -21,6 +21,7 @@ function Dashboard() {
   const [toast, setToast] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const navigate = useNavigate();
 
   const showToast = (message, type = 'success') => {
@@ -40,6 +41,32 @@ function Dashboard() {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    // Check for service worker updates
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        // Check for updates every 60 seconds
+        setInterval(() => {
+          registration.update();
+        }, 60000);
+
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available
+              setUpdateAvailable(true);
+            }
+          });
+        });
+      });
+
+      // Listen for controller change (when new SW takes over)
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        setUpdateAvailable(true);
+      });
+    }
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -63,9 +90,27 @@ function Dashboard() {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
+      // Clear service worker cache and reload
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+          await registration.update();
+        }
+      }
+
+      // Clear browser cache for this page
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      }
+
+      // Reload data from server
       await loadData();
-      showToast('✅ Data refreshed!', 'success');
+      showToast('✅ Data refreshed! Cache cleared.', 'success');
     } catch (error) {
+      console.error('Refresh error:', error);
       showToast('❌ Failed to refresh data', 'error');
     } finally {
       setIsRefreshing(false);
@@ -90,6 +135,29 @@ function Dashboard() {
     }
   };
 
+  const handleUpdateApp = () => {
+    // Clear all caches and reload
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
+
+    // Skip waiting and activate new service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    }
+
+    // Reload the page
+    window.location.reload();
+  };
+
   const handleLogout = () => {
     authService.logout();
     navigate('/login');
@@ -97,6 +165,23 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
+      {updateAvailable && (
+        <div className="update-banner">
+          <div className="update-content">
+            <span className="update-icon">🎉</span>
+            <div className="update-text">
+              <strong>New version available!</strong>
+              <p>Click to update and get the latest features</p>
+            </div>
+            <button onClick={handleUpdateApp} className="update-btn">
+              Update Now
+            </button>
+            <button onClick={() => setUpdateAvailable(false)} className="dismiss-btn">
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
       <header className="header">
         <div className="header-content">
           <div className="logo">
