@@ -1,23 +1,23 @@
 .habit-card {
   background: white;
   border-radius: 0;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 1rem;
+  padding: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 0.5rem;
   transition: all 0.3s ease;
-  border-left: 6px solid var(--level-color);
+  border-left: 4px solid var(--level-color);
 }
 
 .habit-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .habit-header {
   display: flex;
   justify-content: space-between;
   align-items: start;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .habit-title-section {
@@ -26,20 +26,20 @@
 
 .habit-level-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.65rem;
   font-weight: 700;
   background: var(--level-color);
   color: white;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .habit-name {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #2C3E50;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
 }
 
 .habit-category {
@@ -47,25 +47,49 @@
   align-items: center;
   gap: 0.25rem;
   background: #F0F0F0;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
   color: #666;
 }
 
+.habit-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 16px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.habit-status-badge.done {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.habit-status-badge.skip {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.habit-status-badge.pending {
+  background: #FFEBEE;
+  color: #C62828;
+}
+
 .habit-meta {
-  margin: 1rem 0;
-  padding: 1rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
   background: #F8F9FA;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .habit-meta-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
   color: #555;
 }
 
@@ -77,107 +101,108 @@
   font-style: italic;
   color: #667eea;
   background: #F0F4FF;
-  padding: 0.75rem;
-  border-radius: 8px;
+  padding: 0.5rem;
+  border-radius: 6px;
   margin: 0.5rem 0;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .habit-progress {
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 
 .progress-bar {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: #E0E0E0;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #51CF66 0%, #3DB854 100%);
   transition: width 0.5s ease;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .habit-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .btn-done {
   background: linear-gradient(135deg, #51CF66 0%, #3DB854 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+  box-shadow: 0 2px 8px rgba(81, 207, 102, 0.3);
 }
 
 .btn-done:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(81, 207, 102, 0.4);
+  box-shadow: 0 4px 12px rgba(81, 207, 102, 0.4);
 }
 
 .btn-skip {
   background: linear-gradient(135deg, #FFA94D 0%, #FF8C42 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(255, 169, 77, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 169, 77, 0.3);
 }
 
 .btn-skip:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 169, 77, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 169, 77, 0.4);
 }
 
 .btn-delete {
   background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
 .btn-delete:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
 }
 
 .skip-days-panel {
-  margin-top: 1rem;
-  padding: 1rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
   background: #FFF9E6;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 2px solid #FFE66D;
 }
 
 .skip-days-title {
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
   color: #2C3E50;
 }
 
 .skip-day-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.35rem 0.75rem;
   background: white;
   border: 2px solid #FFE66D;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   transition: all 0.2s ease;
 }
 
@@ -187,28 +212,56 @@
 }
 
 .level-section-title {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: white;
-  margin: 2rem 0 1rem 0;
-  padding: 0.75rem 1.25rem;
+  margin: 1rem 0 0.5rem 0;
+  padding: 0.5rem 1rem;
   background: var(--level-color);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  display: inline-block;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.level-section-title:hover {
+  opacity: 0.9;
+}
+
+.level-collapse-icon {
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+.level-collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.level-section-content {
+  max-height: 10000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.level-section-content.collapsed {
+  max-height: 0;
+  opacity: 0;
 }
 
 .empty-state {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
   animation: float 3s ease-in-out infinite;
 }
 
@@ -222,14 +275,14 @@
 }
 
 .empty-text {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #666;
   margin: 0;
 }
 
 @media (max-width: 768px) {
   .habit-card {
-    padding: 1rem;
+    padding: 0.65rem;
   }
 
   .habit-actions {
@@ -239,5 +292,10 @@
   .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .level-section-title {
+    font-size: 1rem;
+    padding: 0.4rem 0.75rem;
   }
 }

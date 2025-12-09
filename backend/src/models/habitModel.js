@@ -24,24 +24,30 @@ export async function createHabit(userId, habitData) {
 }
 
 export async function getHabitsByUser(userId, view = 'active') {
-  let whereClause = 'WHERE user_id = ?';
+  let whereClause = 'WHERE h.user_id = ?';
 
   if (view === 'active') {
-    whereClause += ' AND deleted_at IS NULL AND graduated_date IS NULL';
+    whereClause += ' AND h.deleted_at IS NULL AND h.graduated_date IS NULL';
   } else if (view === 'completed') {
-    whereClause += ' AND graduated_date IS NOT NULL';
+    whereClause += ' AND h.graduated_date IS NOT NULL';
   } else if (view === 'deleted') {
-    whereClause += ' AND deleted_at IS NOT NULL';
+    whereClause += ' AND h.deleted_at IS NOT NULL';
   } else {
     // Default to active if invalid view
-    whereClause += ' AND deleted_at IS NULL AND graduated_date IS NULL';
+    whereClause += ' AND h.deleted_at IS NULL AND h.graduated_date IS NULL';
   }
 
+  const today = getToday();
+
   return await query(
-    `SELECT * FROM habits
+    `SELECT h.*,
+            hc.status as today_status,
+            hc.date as last_completion_date
+     FROM habits h
+     LEFT JOIN habit_completions hc ON h.id = hc.habit_id AND hc.date = ?
      ${whereClause}
-     ORDER BY current_level DESC, created_at ASC`,
-    [userId]
+     ORDER BY h.current_level DESC, h.created_at ASC`,
+    [today, userId]
   );
 }
 

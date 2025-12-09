@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { habitService } from '../services/habitService';
 import '../styles/Form.css';
 
@@ -15,12 +15,34 @@ function CreateHabit({ onSuccess }) {
     priority: ''
   });
   const [error, setError] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const response = await habitService.getAll();
+      const uniqueCategories = [...new Set(response.data.map(h => h.category).filter(Boolean))];
+      setCategories(uniqueCategories.sort());
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    if (name === 'category' && value === '__add_new__') {
+      setShowNewCategory(true);
+      setFormData({ ...formData, category: '' });
+    } else {
+      setFormData({ ...formData, [name]: value });
+      if (name === 'category') {
+        setShowNewCategory(false);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -151,15 +173,51 @@ function CreateHabit({ onSuccess }) {
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Category *</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              placeholder="Health, Learning, Work..."
-              className="form-input"
-            />
+            {!showNewCategory ? (
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="form-select"
+              >
+                <option value="">Select a category...</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+                <option value="__add_new__">➕ Add New Category</option>
+              </select>
+            ) : (
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter new category..."
+                  className="form-input"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNewCategory(false);
+                    setFormData({ ...formData, category: '' });
+                  }}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    background: '#e0e0e0',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem'
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="form-group">

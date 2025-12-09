@@ -77,6 +77,32 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
           <div className="task-header">
             <div className="task-title-section">
               <h3 className="task-name">{task.name}</h3>
+              <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                {viewMode === 'completed' && task.completed_at && (
+                  <span style={{
+                    background: '#E8F5E9',
+                    color: '#2E7D32',
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '20px',
+                    fontSize: '0.65rem',
+                    fontWeight: '700'
+                  }}>
+                    ✅ Completed
+                  </span>
+                )}
+                {(viewMode === 'today' || viewMode === 'upcoming') && !task.completed_at && (
+                  <span style={{
+                    background: isOverdue(task.deadline) ? '#FFEBEE' : '#FFF3E0',
+                    color: isOverdue(task.deadline) ? '#C62828' : '#E65100',
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '20px',
+                    fontSize: '0.65rem',
+                    fontWeight: '700'
+                  }}>
+                    {isOverdue(task.deadline) ? '🚨 Overdue' : '⏰ Pending'}
+                  </span>
+                )}
+              </div>
               {task.notes && (
                 <p className="task-notes">📝 {task.notes}</p>
               )}
@@ -87,7 +113,7 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
             <div className="task-meta-item">
               📅 Deadline: {task.deadline}
               {isOverdue(task.deadline) && (
-                <span style={{ color: '#C62828', fontWeight: '700', marginLeft: '0.5rem' }}>
+                <span style={{ color: '#C62828', fontWeight: '700', marginLeft: '0.35rem' }}>
                   ⚠️ OVERDUE
                 </span>
               )}
@@ -133,9 +159,9 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
           {viewMode === 'completed' && (
             <div className="task-actions">
               <div style={{
-                padding: '1rem',
+                padding: '0.6rem',
                 background: '#E8F5E9',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 color: '#2E7D32',
                 fontWeight: '600',
                 textAlign: 'center'
@@ -148,9 +174,9 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
           {viewMode === 'deleted' && (
             <div className="task-actions">
               <div style={{
-                padding: '1rem',
+                padding: '0.6rem',
                 background: '#FFEBEE',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 color: '#C62828',
                 fontWeight: '600'
               }}>

@@ -7,6 +7,8 @@ import '../styles/HabitCard.css';
 function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [skipDays, setSkipDays] = useState([]);
+  const [collapsedLevels, setCollapsedLevels] = useState({});
+  const [numericValues, setNumericValues] = useState({});
 
   const groupedByLevel = habits.reduce((acc, habit) => {
     const level = habit.current_level || 0;
@@ -84,15 +86,30 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
     );
   }
 
+  const toggleLevel = (level) => {
+    setCollapsedLevels(prev => ({
+      ...prev,
+      [level]: !prev[level]
+    }));
+  };
+
   return (
     <div>
       {Object.keys(groupedByLevel)
         .sort((a, b) => b - a)
         .map((level) => (
           <div key={level}>
-            <h2 className="level-section-title" style={{ '--level-color': getLevelColor(parseInt(level)) }}>
-              🏆 Level {level}
+            <h2
+              className="level-section-title"
+              style={{ '--level-color': getLevelColor(parseInt(level)) }}
+              onClick={() => toggleLevel(level)}
+            >
+              <span>🏆 Level {level} ({groupedByLevel[level].length})</span>
+              <span className={`level-collapse-icon ${collapsedLevels[level] ? 'collapsed' : ''}`}>
+                ▼
+              </span>
             </h2>
+            <div className={`level-section-content ${collapsedLevels[level] ? 'collapsed' : ''}`}>
             {groupedByLevel[level].map((habit) => (
               <div
                 key={habit.id}
@@ -105,7 +122,45 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
                       Level {habit.current_level}
                     </div>
                     <h3 className="habit-name">{habit.name}</h3>
-                    <span className="habit-category">📂 {habit.category}</span>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span className="habit-category">📂 {habit.category}</span>
+                      {habit.today_status === 'done' && (
+                        <span style={{
+                          background: '#E8F5E9',
+                          color: '#2E7D32',
+                          padding: '0.25rem 0.75rem',
+                          borderRadius: '20px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700'
+                        }}>
+                          ✅ Done Today
+                        </span>
+                      )}
+                      {habit.today_status === 'skip' && (
+                        <span style={{
+                          background: '#FFF3E0',
+                          color: '#E65100',
+                          padding: '0.25rem 0.75rem',
+                          borderRadius: '20px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700'
+                        }}>
+                          ⏭️ Skipped Today
+                        </span>
+                      )}
+                      {!habit.today_status && viewMode === 'active' && (
+                        <span style={{
+                          background: '#FFEBEE',
+                          color: '#C62828',
+                          padding: '0.25rem 0.75rem',
+                          borderRadius: '20px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700'
+                        }}>
+                          ⏰ Pending
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -147,18 +202,64 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
 
                 {viewMode === 'active' && (
                   <div className="habit-actions">
-                    <button
-                      onClick={() => handleComplete(habit.id, 'done')}
-                      className="btn btn-done"
-                    >
-                      ✅ Done
-                    </button>
-                    <button
-                      onClick={() => loadSkipDays(habit.id)}
-                      className="btn btn-skip"
-                    >
-                      ⏭️ Skip
-                    </button>
+                    {habit.today_status ? (
+                      <div style={{
+                        padding: '1rem',
+                        background: '#E8F5E9',
+                        borderRadius: '12px',
+                        color: '#2E7D32',
+                        fontWeight: '600',
+                        textAlign: 'center',
+                        flex: 1
+                      }}>
+                        {habit.today_status === 'done' && '🎉 Great job! You completed this habit today!'}
+                        {habit.today_status === 'skip' && '⏭️ You used a skip day for this habit today'}
+                      </div>
+                    ) : (
+                      <>
+                        {habit.target_type === 'numeric' && (
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
+                            <input
+                              type="number"
+                              min="0"
+                              value={numericValues[habit.id] || ''}
+                              onChange={(e) => setNumericValues({ ...numericValues, [habit.id]: e.target.value })}
+                              placeholder={`Units (${habit.target_unit || 'count'})`}
+                              style={{
+                                flex: 1,
+                                padding: '0.5rem',
+                                border: '2px solid #E0E0E0',
+                                borderRadius: '8px',
+                                fontSize: '0.8rem',
+                                outline: 'none'
+                              }}
+                              onFocus={(e) => e.target.style.borderColor = '#51CF66'}
+                              onBlur={(e) => e.target.style.borderColor = '#E0E0E0'}
+                            />
+                          </div>
+                        )}
+                        <button
+                          onClick={() => {
+                            const value = habit.target_type === 'numeric' ? parseInt(numericValues[habit.id]) : null;
+                            if (habit.target_type === 'numeric' && (!value || value <= 0)) {
+                              showToast('⚠️ Please enter a valid number of units completed', 'warning');
+                              return;
+                            }
+                            handleComplete(habit.id, 'done', value);
+                            setNumericValues({ ...numericValues, [habit.id]: '' });
+                          }}
+                          className="btn btn-done"
+                        >
+                          ✅ Done
+                        </button>
+                        <button
+                          onClick={() => loadSkipDays(habit.id)}
+                          className="btn btn-skip"
+                        >
+                          ⏭️ Skip
+                        </button>
+                      </>
+                    )}
                     <button
                       onClick={() => handleDelete(habit.id)}
                       className="btn btn-delete"
@@ -225,6 +326,7 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
                 )}
               </div>
             ))}
+            </div>
           </div>
         ))}
     </div>
