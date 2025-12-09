@@ -64,7 +64,8 @@
 
 .task-meta {
   display: flex;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin: 1rem 0;
   padding: 1rem;
   background: #F8F9FA;
@@ -89,6 +90,30 @@
   flex-wrap: wrap;
 }
 
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-done {
+  background: linear-gradient(135deg, #51CF66 0%, #3DB854 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+}
+
+.btn-done:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(81, 207, 102, 0.4);
+}
+
 .btn-complete {
   background: linear-gradient(135deg, #51CF66 0%, #3DB854 100%);
   color: white;
@@ -109,6 +134,17 @@
 .btn-extend:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(78, 205, 196, 0.4);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.btn-delete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
 }
 
 .section-title {

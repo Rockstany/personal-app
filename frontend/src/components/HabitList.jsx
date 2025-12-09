@@ -4,7 +4,7 @@ import { saveOfflineCompletion } from '../services/offlineSync';
 import { getToday } from '../utils/levelCalculator';
 import '../styles/HabitCard.css';
 
-function HabitList({ habits, onUpdate, showToast }) {
+function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [skipDays, setSkipDays] = useState([]);
 
@@ -145,26 +145,57 @@ function HabitList({ habits, onUpdate, showToast }) {
                   )}
                 </div>
 
-                <div className="habit-actions">
-                  <button
-                    onClick={() => handleComplete(habit.id, 'done')}
-                    className="btn btn-done"
-                  >
-                    ✅ Done
-                  </button>
-                  <button
-                    onClick={() => loadSkipDays(habit.id)}
-                    className="btn btn-skip"
-                  >
-                    ⏭️ Skip
-                  </button>
-                  <button
-                    onClick={() => handleDelete(habit.id)}
-                    className="btn btn-delete"
-                  >
-                    🗑️ Delete
-                  </button>
-                </div>
+                {viewMode === 'active' && (
+                  <div className="habit-actions">
+                    <button
+                      onClick={() => handleComplete(habit.id, 'done')}
+                      className="btn btn-done"
+                    >
+                      ✅ Done
+                    </button>
+                    <button
+                      onClick={() => loadSkipDays(habit.id)}
+                      className="btn btn-skip"
+                    >
+                      ⏭️ Skip
+                    </button>
+                    <button
+                      onClick={() => handleDelete(habit.id)}
+                      className="btn btn-delete"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                )}
+
+                {viewMode === 'completed' && (
+                  <div className="habit-actions">
+                    <div style={{
+                      padding: '1rem',
+                      background: '#E8F5E9',
+                      borderRadius: '12px',
+                      color: '#2E7D32',
+                      fontWeight: '600',
+                      textAlign: 'center'
+                    }}>
+                      🎉 Congratulations! Habit Completed!
+                    </div>
+                  </div>
+                )}
+
+                {viewMode === 'deleted' && (
+                  <div className="habit-actions">
+                    <div style={{
+                      padding: '1rem',
+                      background: '#FFEBEE',
+                      borderRadius: '12px',
+                      color: '#C62828',
+                      fontWeight: '600'
+                    }}>
+                      🗑️ Deleted: {habit.deletion_reason || 'No reason provided'}
+                    </div>
+                  </div>
+                )}
 
                 {selectedHabit === habit.id && skipDays.length > 0 && (
                   <div className="skip-days-panel">
