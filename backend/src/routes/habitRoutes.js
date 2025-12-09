@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post('/', authenticate, habitController.createHabitHandler);
 router.get('/', authenticate, habitController.getHabitsHandler);
+router.get('/weekly-report', authenticate, habitController.getWeeklyReportHandler);
+router.get('/monthly-report', authenticate, habitController.getMonthlyReportHandler);
 router.get('/:id', authenticate, habitController.getHabitHandler);
 router.patch('/:id', authenticate, habitController.updateHabitHandler);
 router.delete('/:id', authenticate, habitController.deleteHabitHandler);
@@ -13,7 +15,5 @@ router.post('/:id/complete', authenticate, habitController.completeHabitHandler)
 router.post('/:id/completions/sync', authenticate, habitController.syncCompletionHandler);
 router.get('/:id/calendar/:month', authenticate, habitController.getCalendarHandler);
 router.get('/:id/skip-days', authenticate, habitController.getSkipDaysHandler);
-router.get('/weekly-report', authenticate, habitController.getWeeklyReportHandler);
-router.get('/monthly-report', authenticate, habitController.getMonthlyReportHandler);
 
 export default router;
