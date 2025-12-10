@@ -21,18 +21,27 @@ function MoneyReports({ showToast }) {
   const loadReports = async () => {
     setLoading(true);
     try {
-      const [summaryRes, categoryRes, accountRes, trendRes] = await Promise.all([
-        moneyService.getSummary(dateRange.start, dateRange.end),
-        moneyService.getCategoryReport(dateRange.start, dateRange.end),
-        moneyService.getAccountReport(),
-        moneyService.getTrend(dateRange.start, dateRange.end)
+      console.log('=== LOADING MONEY REPORTS ===');
+      console.log('Date Range:', dateRange);
+
+      const [summaryRes, categoryRes, accountsRes] = await Promise.all([
+        moneyService.transactions.getPeriodSummary(dateRange.start, dateRange.end),
+        moneyService.categories.getStats(dateRange.start, dateRange.end),
+        moneyService.accounts.getAll()
       ]);
 
+      console.log('Summary:', summaryRes.data);
+      console.log('Categories:', categoryRes.data);
+      console.log('Accounts:', accountsRes.data);
+
       setSummary(summaryRes.data);
-      setByCategory(categoryRes.data);
-      setByAccount(accountRes.data);
-      setTrend(trendRes.data);
+      setByCategory(categoryRes.data || []);
+      setByAccount(accountsRes.data || []);
+      setTrend([]);
     } catch (error) {
+      console.error('=== REPORTS ERROR ===');
+      console.error('Error:', error);
+      console.error('Response:', error.response);
       showToast('❌ Failed to load reports', 'error');
     } finally {
       setLoading(false);
