@@ -18,12 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Saves screen space when collapsed
   - Accessible with aria-label for screen readers
   - Mobile-responsive with optimized heights
+- **Version Display**
+  - Version number now visible in footer (v1.1.0)
+  - Styled with gradient text and bordered badge
+  - Mobile-responsive sizing
+
+### 🐛 Bug Fixes
+- Fixed collapsible navbar toggle button visibility issue
+  - Toggle button now remains visible when header is collapsed
+  - Added proper min-height and padding to header
+  - Moved overflow:hidden to header-content only
 
 ### 🎨 Design Improvements
 - Enhanced header with overflow management
 - Smooth opacity transitions for header content
 - Hover effects on collapse toggle button
 - Active state animations for better user feedback
+- Footer version badge with gradient styling
 
 ---
 

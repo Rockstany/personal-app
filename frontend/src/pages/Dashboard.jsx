@@ -383,6 +383,7 @@ function Dashboard() {
       </div>
 
       <footer className="footer">
+        <div className="footer-version">v1.1.0</div>
         <div className="footer-contact">Contact us</div>
         <a href="tel:7899015086" className="footer-phone">
           📞 7899015086
