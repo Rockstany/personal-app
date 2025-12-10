@@ -35,13 +35,12 @@ function CreateHabit({ onSuccess }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'category' && value === '__add_new__') {
+      // User selected "Add New Category" from dropdown
       setShowNewCategory(true);
       setFormData({ ...formData, category: '' });
     } else {
+      // Regular input change - just update form data
       setFormData({ ...formData, [name]: value });
-      if (name === 'category') {
-        setShowNewCategory(false);
-      }
     }
   };
 
