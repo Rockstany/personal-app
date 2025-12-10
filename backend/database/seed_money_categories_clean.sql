@@ -1,4 +1,4 @@
-USE defaultdb;
+USE habit_tracker;
 
 INSERT INTO money_categories (user_id, name, type, icon, color, is_default) VALUES
 (NULL, 'Salary', 'income', '💼', '#4CAF50', TRUE),

@@ -1,4 +1,4 @@
-USE defaultdb;
+USE habit_tracker;
 
 CREATE TABLE IF NOT EXISTS accounts (
   id INT PRIMARY KEY AUTO_INCREMENT,
