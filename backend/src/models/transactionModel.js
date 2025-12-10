@@ -224,26 +224,25 @@ export async function getPeriodSummary(userId, startDate, endDate) {
   const income = summary.find(s => s.type === 'income');
   const expense = summary.find(s => s.type === 'expense');
 
-  // Get total opening balance from all active accounts
-  // Opening balance represents initial capital/income
-  const openingBalanceResult = await query(
-    `SELECT COALESCE(SUM(opening_balance), 0) as total_opening_balance
+  // Get total account balance from all active accounts
+  // Account balance represents total capital/income available
+  const accountBalanceResult = await query(
+    `SELECT COALESCE(SUM(balance), 0) as total_account_balance
      FROM accounts
      WHERE user_id = ? AND is_active = TRUE`,
     [userId]
   );
 
-  const totalOpeningBalance = parseFloat(openingBalanceResult[0]?.total_opening_balance || 0);
+  const totalAccountBalance = parseFloat(accountBalanceResult[0]?.total_account_balance || 0);
 
-  // Total income = opening balance (initial capital) + all income transactions
-  const totalIncome = totalOpeningBalance + (income?.total || 0);
+  // Total income = current account balance (which already includes all transactions)
+  const totalIncome = totalAccountBalance;
 
   console.log('=== PERIOD SUMMARY DEBUG ===');
-  console.log('Opening Balance:', totalOpeningBalance);
+  console.log('Total Account Balance:', totalAccountBalance);
   console.log('Transaction Income:', income?.total || 0);
-  console.log('Total Income:', totalIncome);
-  console.log('Expenses:', expense?.total || 0);
-  console.log('Balance:', totalIncome - (expense?.total || 0));
+  console.log('Transaction Expenses:', expense?.total || 0);
+  console.log('Displayed Income (= Account Balance):', totalIncome);
 
   return {
     income: totalIncome,
@@ -251,7 +250,7 @@ export async function getPeriodSummary(userId, startDate, endDate) {
     balance: totalIncome - (expense?.total || 0),
     income_count: income?.count || 0,
     expense_count: expense?.count || 0,
-    opening_balance: totalOpeningBalance, // Include this for transparency
+    account_balance: totalAccountBalance, // Total from all accounts
     transaction_income: income?.total || 0 // Income from transactions only
   };
 }
