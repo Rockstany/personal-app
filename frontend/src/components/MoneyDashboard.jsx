@@ -10,6 +10,7 @@ import '../styles/Money.css';
 function MoneyDashboard({ showToast }) {
   const [activeView, setActiveView] = useState('dashboard'); // dashboard, add, accounts, categories, recurring, reports
   const [accounts, setAccounts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [todaySummary, setTodaySummary] = useState({ income: 0, expense: 0, balance: 0 });
   const [dueRecurring, setDueRecurring] = useState([]);
@@ -33,15 +34,17 @@ function MoneyDashboard({ showToast }) {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [accountsRes, todayRes, dueRes] = await Promise.all([
+      const [accountsRes, categoriesRes, todayRes, dueRes] = await Promise.all([
         moneyService.accounts.getAll(),
+        moneyService.categories.getAll(),
         moneyService.transactions.getDailySummary(),
         moneyService.recurring.getDue()
       ]);
 
-      setAccounts(accountsRes.data);
-      setTodaySummary(todayRes.data);
-      setDueRecurring(dueRes.data);
+      setAccounts(accountsRes.data || []);
+      setCategories(categoriesRes.data || []);
+      setTodaySummary(todayRes.data || { income: 0, expense: 0, balance: 0 });
+      setDueRecurring(dueRes.data || []);
 
       await loadTransactions();
     } catch (error) {
@@ -312,22 +315,20 @@ function MoneyDashboard({ showToast }) {
       {activeView === 'add' && (
         <AddTransaction
           accounts={accounts}
+          categories={categories}
           onSuccess={() => {
             setActiveView('dashboard');
             loadData();
             showToast('Transaction added successfully!', 'success');
           }}
-          showToast={showToast}
         />
       )}
 
       {/* Accounts View */}
       {activeView === 'accounts' && (
         <ManageAccounts
-          onUpdate={() => {
-            loadData();
-            showToast('Accounts updated!', 'success');
-          }}
+          accounts={accounts}
+          onUpdate={loadData}
           showToast={showToast}
         />
       )}
@@ -335,10 +336,8 @@ function MoneyDashboard({ showToast }) {
       {/* Categories View */}
       {activeView === 'categories' && (
         <ManageCategories
-          onUpdate={() => {
-            loadData();
-            showToast('Categories updated!', 'success');
-          }}
+          categories={categories}
+          onUpdate={loadData}
           showToast={showToast}
         />
       )}
@@ -347,10 +346,7 @@ function MoneyDashboard({ showToast }) {
       {activeView === 'recurring' && (
         <RecurringTransactions
           accounts={accounts}
-          onUpdate={() => {
-            loadData();
-            showToast('Recurring transactions updated!', 'success');
-          }}
+          categories={categories}
           showToast={showToast}
         />
       )}
