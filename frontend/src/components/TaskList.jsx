@@ -1,8 +1,18 @@
+import { useState } from 'react';
 import { taskService } from '../services/taskService';
 import { isOverdue } from '../utils/levelCalculator';
 import '../styles/TaskCard.css';
 
 function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
+  const [collapsedTasks, setCollapsedTasks] = useState({});
+
+  const toggleTask = (taskId) => {
+    setCollapsedTasks(prev => ({
+      ...prev,
+      [taskId]: !prev[taskId]
+    }));
+  };
+
   const handleComplete = async (taskId) => {
     try {
       await taskService.complete(taskId);
@@ -72,11 +82,14 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
       {tasks.map((task) => (
         <div
           key={task.id}
-          className={`task-card ${isOverdue(task.deadline) ? 'overdue' : ''}`}
+          className={`task-card ${collapsedTasks[task.id] ? 'collapsed' : ''} ${isOverdue(task.deadline) ? 'overdue' : ''}`}
         >
-          <div className="task-header">
+          <div className="task-header" onClick={() => toggleTask(task.id)} style={{ cursor: 'pointer' }}>
             <div className="task-title-section">
               <h3 className="task-name">{task.name}</h3>
+              <span className={`task-collapse-icon ${collapsedTasks[task.id] ? 'collapsed' : ''}`}>
+                ▼
+              </span>
               <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                 {viewMode === 'completed' && task.completed_at && (
                   <span style={{
@@ -109,6 +122,7 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
             </div>
           </div>
 
+          <div className={`task-details ${collapsedTasks[task.id] ? 'hidden' : ''}`}>
           <div className="task-meta">
             <div className="task-meta-item">
               📅 Deadline: {task.deadline}
@@ -184,6 +198,7 @@ function TaskList({ tasks, onUpdate, showToast, viewMode = 'today' }) {
               </div>
             </div>
           )}
+          </div>
         </div>
       ))}
     </div>

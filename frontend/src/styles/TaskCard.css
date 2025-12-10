@@ -10,6 +10,10 @@
   border-left: 4px solid #4ECDC4;
 }
 
+.task-card.collapsed {
+  padding-bottom: 0.85rem;
+}
+
 .task-card.overdue {
   border-left-color: #FF6B6B;
   background: linear-gradient(to right, #FFF5F5 0%, white 20%);
@@ -25,10 +29,41 @@
   justify-content: space-between;
   align-items: start;
   margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.task-collapse-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 1rem;
+  color: #999;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.task-collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.task-details {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.task-details.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .task-title-section {
   flex: 1;
+  padding-right: 2rem;
 }
 
 .task-status-badge {

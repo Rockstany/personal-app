@@ -10,6 +10,10 @@
   border-left: 4px solid var(--level-color);
 }
 
+.habit-card.collapsed {
+  padding-bottom: 0.85rem;
+}
+
 .habit-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -20,10 +24,41 @@
   justify-content: space-between;
   align-items: start;
   margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.habit-collapse-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 1rem;
+  color: #999;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.habit-collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.habit-details {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.habit-details.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .habit-title-section {
   flex: 1;
+  padding-right: 2rem;
 }
 
 .habit-level-badge {
