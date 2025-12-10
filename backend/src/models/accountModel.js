@@ -19,10 +19,11 @@ export async function createAccount(userId, accountData) {
   const sanitizedBankName = bank_name === '' ? null : bank_name;
   const sanitizedAccountNumber = account_number === '' ? null : account_number;
 
+  // Store initial balance as both balance and opening_balance
   const result = await query(
-    `INSERT INTO accounts (user_id, account_name, account_type, balance, bank_name, account_number, credit_limit, due_date, color, icon)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [userId, account_name, account_type, balance, sanitizedBankName, sanitizedAccountNumber, sanitizedCreditLimit, sanitizedDueDate, color, icon]
+    `INSERT INTO accounts (user_id, account_name, account_type, balance, opening_balance, bank_name, account_number, credit_limit, due_date, color, icon)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [userId, account_name, account_type, balance, balance, sanitizedBankName, sanitizedAccountNumber, sanitizedCreditLimit, sanitizedDueDate, color, icon]
   );
 
   return result.insertId;
@@ -129,6 +130,18 @@ export async function getTotalBalance(userId) {
 }
 
 export async function recalculateAccountBalance(accountId, userId) {
+  // Get the account's opening balance
+  const accountResult = await query(
+    `SELECT opening_balance FROM accounts WHERE id = ? AND user_id = ?`,
+    [accountId, userId]
+  );
+
+  if (accountResult.length === 0) {
+    throw new Error('Account not found');
+  }
+
+  const openingBalance = parseFloat(accountResult[0].opening_balance || 0);
+
   // Get all transactions for this account
   const transactions = await query(
     `SELECT type, amount FROM transactions
@@ -165,8 +178,8 @@ export async function recalculateAccountBalance(accountId, userId) {
   // Get sum of transfers in
   const transfersInSum = transfersTo.reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
-  // Calculate balance: starting from 0, add income, subtract expenses and outgoing transfers, add incoming transfers
-  const calculatedBalance = incomeSum - expenseSum - transfersOutSum + transfersInSum;
+  // Calculate balance: opening balance + income - expenses - transfers out + transfers in
+  const calculatedBalance = openingBalance + incomeSum - expenseSum - transfersOutSum + transfersInSum;
 
   // Update the account balance
   await query(
