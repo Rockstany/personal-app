@@ -127,3 +127,69 @@ export async function getTotalBalance(userId) {
 
   return result[0]?.total || 0;
 }
+
+export async function recalculateAccountBalance(accountId, userId) {
+  // Get all transactions for this account
+  const transactions = await query(
+    `SELECT type, amount FROM transactions
+     WHERE account_id = ? AND user_id = ?`,
+    [accountId, userId]
+  );
+
+  // Get all transfers affecting this account
+  const transfersFrom = await query(
+    `SELECT amount FROM transfers
+     WHERE from_account_id = ? AND user_id = ?`,
+    [accountId, userId]
+  );
+
+  const transfersTo = await query(
+    `SELECT amount FROM transfers
+     WHERE to_account_id = ? AND user_id = ?`,
+    [accountId, userId]
+  );
+
+  // Get sum of all income transactions
+  const incomeSum = transactions
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+  // Get sum of all expense transactions
+  const expenseSum = transactions
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+  // Get sum of transfers out
+  const transfersOutSum = transfersFrom.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+  // Get sum of transfers in
+  const transfersInSum = transfersTo.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+  // Calculate balance: starting from 0, add income, subtract expenses and outgoing transfers, add incoming transfers
+  const calculatedBalance = incomeSum - expenseSum - transfersOutSum + transfersInSum;
+
+  // Update the account balance
+  await query(
+    `UPDATE accounts SET balance = ? WHERE id = ? AND user_id = ?`,
+    [calculatedBalance, accountId, userId]
+  );
+
+  return calculatedBalance;
+}
+
+export async function recalculateAllBalances(userId) {
+  const accounts = await getAccountsByUser(userId);
+  const results = [];
+
+  for (const account of accounts) {
+    const newBalance = await recalculateAccountBalance(account.id, userId);
+    results.push({
+      accountId: account.id,
+      accountName: account.account_name,
+      oldBalance: account.balance,
+      newBalance: newBalance
+    });
+  }
+
+  return results;
+}

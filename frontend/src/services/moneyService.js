@@ -8,7 +8,9 @@ export const moneyService = {
     getById: (id) => api.get(`/money/accounts/${id}`),
     update: (id, updates) => api.patch(`/money/accounts/${id}`, updates),
     delete: (id) => api.delete(`/money/accounts/${id}`),
-    getTotalBalance: () => api.get('/money/accounts/total-balance')
+    getTotalBalance: () => api.get('/money/accounts/total-balance'),
+    recalculate: (id) => api.post(`/money/accounts/${id}/recalculate`),
+    recalculateAll: () => api.post('/money/accounts/recalculate-all')
   },
 
   // Category APIs

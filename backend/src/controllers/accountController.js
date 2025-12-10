@@ -81,3 +81,30 @@ export async function getTotalBalanceHandler(req, res) {
     res.status(500).json({ error: 'Failed to fetch total balance' });
   }
 }
+
+export async function recalculateBalanceHandler(req, res) {
+  try {
+    const accountId = req.params.id;
+    const newBalance = await accountModel.recalculateAccountBalance(accountId, req.userId);
+    res.json({
+      message: 'Balance recalculated successfully',
+      newBalance: newBalance
+    });
+  } catch (error) {
+    console.error('Recalculate balance error:', error);
+    res.status(500).json({ error: 'Failed to recalculate balance' });
+  }
+}
+
+export async function recalculateAllBalancesHandler(req, res) {
+  try {
+    const results = await accountModel.recalculateAllBalances(req.userId);
+    res.json({
+      message: 'All balances recalculated successfully',
+      results: results
+    });
+  } catch (error) {
+    console.error('Recalculate all balances error:', error);
+    res.status(500).json({ error: 'Failed to recalculate balances' });
+  }
+}

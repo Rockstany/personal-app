@@ -114,16 +114,42 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
 
   const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance || 0), 0);
 
+  const handleRecalculateAll = async () => {
+    if (!confirm('This will recalculate all account balances based on transactions. Continue?')) {
+      return;
+    }
+
+    try {
+      const response = await moneyService.accounts.recalculateAll();
+      console.log('Recalculate response:', response.data);
+      showToast('✅ All balances recalculated successfully!', 'success');
+      onUpdate();
+    } catch (error) {
+      console.error('Recalculate error:', error);
+      showToast('❌ Failed to recalculate balances', 'error');
+    }
+  };
+
   return (
     <div className="money-card">
       <div className="card-header">
         <h3>💼 Manage Accounts</h3>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="action-btn"
-        >
-          {showForm ? '❌ Cancel' : '➕ Add Account'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            onClick={handleRecalculateAll}
+            className="action-btn"
+            style={{ background: '#FFC107', fontSize: '0.9rem' }}
+            title="Recalculate all account balances based on transactions"
+          >
+            🔄 Fix Balances
+          </button>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="action-btn"
+          >
+            {showForm ? '❌ Cancel' : '➕ Add Account'}
+          </button>
+        </div>
       </div>
 
       <div className="total-balance">
@@ -167,7 +193,7 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Initial Balance</label>
+              <label>{editingAccount ? 'Current Balance (read-only)' : 'Initial Balance'}</label>
               <input
                 type="number"
                 name="balance"
@@ -175,7 +201,14 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
                 onChange={handleChange}
                 step="0.01"
                 placeholder="0.00"
+                disabled={editingAccount}
+                style={editingAccount ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
               />
+              {editingAccount && (
+                <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
+                  Balance is automatically updated by transactions
+                </small>
+              )}
             </div>
 
             <div className="form-group">
