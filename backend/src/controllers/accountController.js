@@ -2,11 +2,27 @@ import * as accountModel from '../models/accountModel.js';
 
 export async function createAccountHandler(req, res) {
   try {
+    console.log('=== CREATE ACCOUNT BACKEND ===');
+    console.log('User ID:', req.userId);
+    console.log('Request body:', req.body);
+
     const accountId = await accountModel.createAccount(req.userId, req.body);
+    console.log('Account created with ID:', accountId);
+
     res.status(201).json({ id: accountId, message: 'Account created successfully' });
   } catch (error) {
-    console.error('Create account error:', error);
-    res.status(500).json({ error: 'Failed to create account' });
+    console.error('=== CREATE ACCOUNT ERROR ===');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error SQL:', error.sql);
+    console.error('Full error:', error);
+
+    res.status(500).json({
+      error: 'Failed to create account',
+      details: error.message,
+      code: error.code
+    });
   }
 }
 
