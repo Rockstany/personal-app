@@ -4,6 +4,7 @@ import { authService } from '../services/authService';
 import { habitService } from '../services/habitService';
 import { taskService } from '../services/taskService';
 import { syncOfflineData } from '../services/offlineSync';
+import { monitoringService } from '../services/monitoringService';
 import HabitList from '../components/HabitList';
 import TaskList from '../components/TaskList';
 import CreateHabit from '../components/CreateHabit';
@@ -11,6 +12,7 @@ import CreateTask from '../components/CreateTask';
 import Reports from '../components/Reports';
 import SystemStatus from '../components/SystemStatus';
 import MoneyDashboard from '../components/MoneyDashboard';
+import SystemStatusBar from '../components/SystemStatusBar';
 import Toast from '../components/Toast';
 import '../styles/Dashboard.css';
 
@@ -37,6 +39,9 @@ function Dashboard() {
   useEffect(() => {
     loadData();
     syncOfflineData();
+
+    // Track initial page view
+    monitoringService.trackPageView('habits');
 
     // Listen for online/offline status
     const handleOnline = () => {
@@ -79,6 +84,11 @@ function Dashboard() {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // Track page changes
+  useEffect(() => {
+    monitoringService.trackPageView(activeTab);
+  }, [activeTab]);
 
   // Reload data when view changes
   useEffect(() => {
@@ -410,6 +420,8 @@ function Dashboard() {
           onClose={() => setToast(null)}
         />
       )}
+
+      <SystemStatusBar />
     </div>
   );
 }
