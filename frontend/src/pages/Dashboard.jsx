@@ -26,6 +26,7 @@ function Dashboard() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [habitView, setHabitView] = useState('active'); // 'active', 'completed', 'deleted'
   const [taskView, setTaskView] = useState('today'); // 'today', 'upcoming', 'completed'
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const navigate = useNavigate();
 
   const showToast = (message, type = 'success') => {
@@ -191,7 +192,14 @@ function Dashboard() {
           </div>
         </div>
       )}
-      <header className="header">
+      <header className={`header ${isHeaderCollapsed ? 'collapsed' : ''}`}>
+        <button
+          className="header-toggle"
+          onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+          aria-label={isHeaderCollapsed ? "Expand header" : "Collapse header"}
+        >
+          {isHeaderCollapsed ? '▼' : '▲'}
+        </button>
         <div className="header-content">
           <div className="logo">
             <div className="logo-icon">🎯</div>
