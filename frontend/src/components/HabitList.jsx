@@ -99,7 +99,7 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
   const toggleHabit = (habitId) => {
     setCollapsedHabits(prev => ({
       ...prev,
-      [habitId]: !prev[habitId]
+      [habitId]: prev[habitId] === undefined ? false : !prev[habitId] // Default collapsed = true
     }));
   };
 
@@ -120,10 +120,12 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
               </span>
             </h2>
             <div className={`level-section-content ${collapsedLevels[level] ? 'collapsed' : ''}`}>
-            {groupedByLevel[level].map((habit) => (
+            {groupedByLevel[level].map((habit) => {
+              const isCollapsed = collapsedHabits[habit.id] === undefined ? true : collapsedHabits[habit.id];
+              return (
               <div
                 key={habit.id}
-                className={`habit-card ${collapsedHabits[habit.id] ? 'collapsed' : ''}`}
+                className={`habit-card ${isCollapsed ? 'collapsed' : ''}`}
                 style={{ '--level-color': getLevelColor(habit.current_level) }}
               >
                 <div className="habit-header" onClick={() => toggleHabit(habit.id)} style={{ cursor: 'pointer' }}>
@@ -132,7 +134,7 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
                       Level {habit.current_level}
                     </div>
                     <h3 className="habit-name">{habit.name}</h3>
-                    <span className={`habit-collapse-icon ${collapsedHabits[habit.id] ? 'collapsed' : ''}`}>
+                    <span className={`habit-collapse-icon ${isCollapsed ? 'collapsed' : ''}`}>
                       ▼
                     </span>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -177,7 +179,7 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
                   </div>
                 </div>
 
-                <div className={`habit-details ${collapsedHabits[habit.id] ? 'hidden' : ''}`}>
+                <div className={`habit-details ${isCollapsed ? 'hidden' : ''}`}>
                 <div className="habit-meta">
                   {habit.motivation && (
                     <div className="habit-motivation">
@@ -351,7 +353,8 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
                 )}
                 </div>
               </div>
-            ))}
+            );
+            })}
             </div>
           </div>
         ))}
