@@ -198,6 +198,8 @@ export async function getDailySummary(userId, date) {
   const income = summary.find(s => s.type === 'income');
   const expense = summary.find(s => s.type === 'expense');
 
+  // Get total opening balance from all accounts (only include once, not per day)
+  // For daily summary, we DON'T include opening balance as it's not a daily transaction
   return {
     income: income?.total || 0,
     expense: expense?.total || 0,
@@ -222,12 +224,28 @@ export async function getPeriodSummary(userId, startDate, endDate) {
   const income = summary.find(s => s.type === 'income');
   const expense = summary.find(s => s.type === 'expense');
 
+  // Get total opening balance from all active accounts
+  // Opening balance represents initial capital/income
+  const openingBalanceResult = await query(
+    `SELECT COALESCE(SUM(opening_balance), 0) as total_opening_balance
+     FROM accounts
+     WHERE user_id = ? AND is_active = TRUE`,
+    [userId]
+  );
+
+  const totalOpeningBalance = parseFloat(openingBalanceResult[0]?.total_opening_balance || 0);
+
+  // Total income = opening balance (initial capital) + all income transactions
+  const totalIncome = totalOpeningBalance + (income?.total || 0);
+
   return {
-    income: income?.total || 0,
+    income: totalIncome,
     expense: expense?.total || 0,
-    balance: (income?.total || 0) - (expense?.total || 0),
+    balance: totalIncome - (expense?.total || 0),
     income_count: income?.count || 0,
-    expense_count: expense?.count || 0
+    expense_count: expense?.count || 0,
+    opening_balance: totalOpeningBalance, // Include this for transparency
+    transaction_income: income?.total || 0 // Income from transactions only
   };
 }
 

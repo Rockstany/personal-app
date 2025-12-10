@@ -179,7 +179,11 @@ export async function recalculateAccountBalance(accountId, userId) {
   const transfersInSum = transfersTo.reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
   // Calculate balance: opening balance + income - expenses - transfers out + transfers in
+  // Note: Opening balance is treated as initial income/capital
   const calculatedBalance = openingBalance + incomeSum - expenseSum - transfersOutSum + transfersInSum;
+
+  // Total income includes opening balance (initial capital) + all income transactions
+  const totalIncome = openingBalance + incomeSum;
 
   // Update the account balance
   await query(
