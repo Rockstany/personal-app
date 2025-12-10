@@ -13,10 +13,16 @@ export async function createAccount(userId, accountData) {
     icon = '💰'
   } = accountData;
 
+  // Convert empty strings to null for numeric fields
+  const sanitizedCreditLimit = credit_limit === '' || credit_limit === undefined ? null : credit_limit;
+  const sanitizedDueDate = due_date === '' || due_date === undefined ? null : due_date;
+  const sanitizedBankName = bank_name === '' ? null : bank_name;
+  const sanitizedAccountNumber = account_number === '' ? null : account_number;
+
   const result = await query(
     `INSERT INTO accounts (user_id, account_name, account_type, balance, bank_name, account_number, credit_limit, due_date, color, icon)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [userId, account_name, account_type, balance, bank_name, account_number, credit_limit, due_date, color, icon]
+    [userId, account_name, account_type, balance, sanitizedBankName, sanitizedAccountNumber, sanitizedCreditLimit, sanitizedDueDate, color, icon]
   );
 
   return result.insertId;
