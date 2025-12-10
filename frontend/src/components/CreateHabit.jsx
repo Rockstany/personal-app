@@ -188,7 +188,7 @@ function CreateHabit({ onSuccess }) {
                 <option value="__add_new__">➕ Add New Category</option>
               </select>
             ) : (
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div className="new-category-wrapper">
                 <input
                   type="text"
                   name="category"
@@ -205,14 +205,7 @@ function CreateHabit({ onSuccess }) {
                     setShowNewCategory(false);
                     setFormData({ ...formData, category: '' });
                   }}
-                  style={{
-                    padding: '0.5rem 0.75rem',
-                    background: '#e0e0e0',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem'
-                  }}
+                  className="cancel-category-btn"
                 >
                   Cancel
                 </button>
