@@ -1,0 +1,13 @@
+{
+  "name": "habit-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "build": "echo 'Please deploy frontend and backend separately. Set Root Directory in Vercel to either frontend or backend.'",
+    "start": "echo 'Please deploy frontend and backend separately. Set Root Directory in Vercel to either frontend or backend.'"
+  }
+}
