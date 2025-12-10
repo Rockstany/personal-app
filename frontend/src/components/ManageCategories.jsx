@@ -31,7 +31,9 @@ function ManageCategories({ categories, onUpdate, showToast }) {
       resetForm();
       onUpdate();
     } catch (error) {
-      showToast('❌ Failed to save category', 'error');
+      console.error('Save category error:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to save category';
+      showToast(`❌ ${errorMsg}`, 'error');
     }
   };
 

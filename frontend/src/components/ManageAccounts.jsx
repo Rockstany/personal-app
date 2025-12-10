@@ -49,7 +49,9 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
       resetForm();
       onUpdate();
     } catch (error) {
-      showToast('❌ Failed to save account', 'error');
+      console.error('Save account error:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to save account';
+      showToast(`❌ ${errorMsg}`, 'error');
     }
   };
 
