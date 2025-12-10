@@ -22,10 +22,10 @@ function ManageCategories({ categories, onUpdate, showToast }) {
     e.preventDefault();
     try {
       if (editingCategory) {
-        await moneyService.updateCategory(editingCategory.id, formData);
+        await moneyService.categories.update(editingCategory.id, formData);
         showToast('✅ Category updated successfully!', 'success');
       } else {
-        await moneyService.createCategory(formData);
+        await moneyService.categories.create(formData);
         showToast('✅ Category created successfully!', 'success');
       }
       resetForm();
@@ -49,7 +49,7 @@ function ManageCategories({ categories, onUpdate, showToast }) {
   const handleDelete = async (categoryId) => {
     if (window.confirm('Are you sure you want to delete this category? Existing transactions will not be affected.')) {
       try {
-        await moneyService.deleteCategory(categoryId);
+        await moneyService.categories.delete(categoryId);
         showToast('🗑️ Category deleted successfully!', 'success');
         onUpdate();
       } catch (error) {

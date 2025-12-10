@@ -12,7 +12,7 @@ function RecurringTransactions({ showToast, accounts, categories }) {
 
   const loadRecurring = async () => {
     try {
-      const response = await moneyService.getAllRecurring();
+      const response = await moneyService.recurring.getAll();
       setRecurring(response.data);
     } catch (error) {
       showToast('❌ Failed to load recurring transactions', 'error');
@@ -23,7 +23,7 @@ function RecurringTransactions({ showToast, accounts, categories }) {
 
   const handleToggleActive = async (id, currentStatus) => {
     try {
-      await moneyService.updateRecurring(id, { is_active: !currentStatus });
+      await moneyService.recurring.update(id, { is_active: !currentStatus });
       showToast(`🔄 Recurring transaction ${!currentStatus ? 'activated' : 'paused'}`, 'success');
       loadRecurring();
     } catch (error) {
@@ -34,7 +34,7 @@ function RecurringTransactions({ showToast, accounts, categories }) {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this recurring transaction?')) {
       try {
-        await moneyService.deleteRecurring(id);
+        await moneyService.recurring.delete(id);
         showToast('🗑️ Recurring transaction deleted', 'success');
         loadRecurring();
       } catch (error) {
@@ -45,7 +45,7 @@ function RecurringTransactions({ showToast, accounts, categories }) {
 
   const handleProcessNow = async (id) => {
     try {
-      await moneyService.processRecurring(id);
+      await moneyService.recurring.process(id);
       showToast('✅ Recurring transaction processed!', 'success');
       loadRecurring();
     } catch (error) {

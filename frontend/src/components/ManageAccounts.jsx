@@ -40,10 +40,10 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
     e.preventDefault();
     try {
       if (editingAccount) {
-        await moneyService.updateAccount(editingAccount.id, formData);
+        await moneyService.accounts.update(editingAccount.id, formData);
         showToast('✅ Account updated successfully!', 'success');
       } else {
-        await moneyService.createAccount(formData);
+        await moneyService.accounts.create(formData);
         showToast('✅ Account created successfully!', 'success');
       }
       resetForm();
@@ -72,7 +72,7 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
   const handleDelete = async (accountId) => {
     if (window.confirm('Are you sure you want to delete this account? This will not delete associated transactions.')) {
       try {
-        await moneyService.deleteAccount(accountId);
+        await moneyService.accounts.delete(accountId);
         showToast('🗑️ Account deleted successfully!', 'success');
         onUpdate();
       } catch (error) {

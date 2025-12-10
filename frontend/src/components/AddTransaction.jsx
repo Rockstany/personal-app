@@ -36,7 +36,7 @@ function AddTransaction({ onSuccess, accounts, categories }) {
     try {
       if (formData.is_recurring) {
         // Create recurring transaction
-        await moneyService.createRecurring({
+        await moneyService.recurring.create({
           account_id: formData.account_id,
           category_id: formData.category_id,
           type: formData.type,
@@ -51,7 +51,7 @@ function AddTransaction({ onSuccess, accounts, categories }) {
         });
       } else {
         // Create one-time transaction
-        await moneyService.createTransaction({
+        await moneyService.transactions.create({
           account_id: formData.account_id,
           category_id: formData.category_id,
           type: formData.type,
