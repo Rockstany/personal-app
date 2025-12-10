@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { monitoringService } from '../services/monitoringService';
 import '../styles/SystemStatus.css';
 
 function SystemStatus({ showToast }) {
   const [systemData, setSystemData] = useState(null);
+  const [frontendMetrics, setFrontendMetrics] = useState(null);
+  const [cacheStatus, setCacheStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
@@ -23,13 +26,75 @@ function SystemStatus({ showToast }) {
 
   const loadSystemStatus = async () => {
     try {
+      // Load backend system status
       const response = await api.get('/system/status');
       setSystemData(response.data);
+
+      // Load frontend monitoring metrics
+      const metrics = monitoringService.getMetrics();
+      const status = monitoringService.getStatus();
+      setFrontendMetrics({ ...metrics, status });
+
+      // Load cache status
+      await loadCacheStatus();
+
       setLoading(false);
     } catch (error) {
       console.error('Error loading system status:', error);
-      showToast('❌ Failed to load system status', 'error');
+
+      // Even if backend fails, show frontend metrics
+      const metrics = monitoringService.getMetrics();
+      const status = monitoringService.getStatus();
+      setFrontendMetrics({ ...metrics, status });
+      await loadCacheStatus();
+
+      showToast('⚠️ Backend status unavailable', 'warning');
       setLoading(false);
+    }
+  };
+
+  const loadCacheStatus = async () => {
+    if ('caches' in window) {
+      try {
+        const cacheNames = await caches.keys();
+        const cacheData = [];
+
+        for (const cacheName of cacheNames) {
+          const cache = await caches.open(cacheName);
+          const keys = await cache.keys();
+          cacheData.push({
+            name: cacheName,
+            count: keys.length,
+            urls: keys.slice(0, 5).map(req => req.url) // First 5 URLs
+          });
+        }
+
+        setCacheStatus({
+          available: true,
+          caches: cacheData,
+          totalCaches: cacheNames.length,
+          totalItems: cacheData.reduce((sum, c) => sum + c.count, 0)
+        });
+      } catch (error) {
+        setCacheStatus({ available: false, error: error.message });
+      }
+    } else {
+      setCacheStatus({ available: false, error: 'Cache API not supported' });
+    }
+  };
+
+  const clearAllCaches = async () => {
+    if (!confirm('Are you sure you want to clear all caches? This will reload the page.')) {
+      return;
+    }
+
+    try {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+      showToast('✅ All caches cleared!', 'success');
+      window.location.reload();
+    } catch (error) {
+      showToast('❌ Failed to clear caches', 'error');
     }
   };
 
@@ -228,8 +293,129 @@ function SystemStatus({ showToast }) {
         </div>
       </div>
 
+      {/* Frontend Performance Metrics */}
+      {frontendMetrics && (
+        <div className="status-section">
+          <h3 className="section-title">Frontend Performance</h3>
+          <div className="metrics-grid">
+            <div className="metric-card">
+              <div className="metric-icon">📡</div>
+              <div className="metric-content">
+                <div className="metric-label">API Calls</div>
+                <div className="metric-value">{frontendMetrics.apiCalls || 0}</div>
+              </div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-icon">⏱️</div>
+              <div className="metric-content">
+                <div className="metric-label">Avg Response</div>
+                <div className="metric-value">{frontendMetrics.avgApiTime || 0}ms</div>
+              </div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-icon">👁️</div>
+              <div className="metric-content">
+                <div className="metric-label">Page Views</div>
+                <div className="metric-value">{frontendMetrics.pageViews || 0}</div>
+              </div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-icon">❌</div>
+              <div className="metric-content">
+                <div className="metric-label">Errors</div>
+                <div className="metric-value" style={{ color: frontendMetrics.errors > 0 ? '#F44336' : '#4CAF50' }}>
+                  {frontendMetrics.errors || 0}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Frontend Errors */}
+      {frontendMetrics && frontendMetrics.recentErrors && frontendMetrics.recentErrors.length > 0 && (
+        <div className="status-section">
+          <h3 className="section-title">⚠️ Recent Errors & Issues</h3>
+          <div className="activity-list">
+            {frontendMetrics.recentErrors.map((error, index) => (
+              <div key={index} className="activity-item" style={{ borderLeft: '3px solid #F44336', background: '#FFEBEE' }}>
+                <div className="activity-icon">❌</div>
+                <div className="activity-content">
+                  <div className="activity-text" style={{ fontWeight: 'bold', color: '#C62828' }}>
+                    {error.type === 'api_error' ? '🌐 API Error' : '⚡ Runtime Error'}: {error.message}
+                  </div>
+                  <div className="activity-time" style={{ fontSize: '0.8rem', color: '#666' }}>
+                    Page: {error.page || 'Unknown'} • {new Date(error.timestamp).toLocaleString()}
+                  </div>
+                  {error.context && (
+                    <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+                      Context: {error.context}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Cache Status */}
+      {cacheStatus && (
+        <div className="status-section">
+          <h3 className="section-title">💾 Cache Status</h3>
+          {cacheStatus.available ? (
+            <>
+              <div className="metrics-grid" style={{ marginBottom: '1rem' }}>
+                <div className="metric-card">
+                  <div className="metric-icon">📦</div>
+                  <div className="metric-content">
+                    <div className="metric-label">Total Caches</div>
+                    <div className="metric-value">{cacheStatus.totalCaches || 0}</div>
+                  </div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-icon">📄</div>
+                  <div className="metric-content">
+                    <div className="metric-label">Cached Items</div>
+                    <div className="metric-value">{cacheStatus.totalItems || 0}</div>
+                  </div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-icon">✅</div>
+                  <div className="metric-content">
+                    <div className="metric-label">Status</div>
+                    <div className="metric-value" style={{ fontSize: '1rem' }}>Active</div>
+                  </div>
+                </div>
+                <div className="metric-card" style={{ cursor: 'pointer' }} onClick={clearAllCaches}>
+                  <div className="metric-icon">🗑️</div>
+                  <div className="metric-content">
+                    <div className="metric-label">Action</div>
+                    <div className="metric-value" style={{ fontSize: '0.9rem', color: '#F44336' }}>Clear All</div>
+                  </div>
+                </div>
+              </div>
+              {cacheStatus.caches && cacheStatus.caches.length > 0 && (
+                <div className="api-stats">
+                  {cacheStatus.caches.map((cache, index) => (
+                    <div key={index} className="api-stat">
+                      <span className="api-stat-label">{cache.name}:</span>
+                      <span className="api-stat-value">{cache.count} items</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ padding: '1rem', background: '#FFEBEE', borderRadius: '8px', color: '#C62828' }}>
+              ❌ Cache API not available: {cacheStatus.error}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Recent Activity */}
-      {systemData.recentActivity && systemData.recentActivity.length > 0 && (
+      {systemData && systemData.recentActivity && systemData.recentActivity.length > 0 && (
         <div className="status-section">
           <h3 className="section-title">Recent Activity</h3>
           <div className="activity-list">
@@ -249,7 +435,7 @@ function SystemStatus({ showToast }) {
       {/* Last Updated */}
       <div className="status-footer">
         <p className="last-updated">
-          Last updated: {new Date(systemData.timestamp || Date.now()).toLocaleString()}
+          Last updated: {new Date(systemData?.timestamp || Date.now()).toLocaleString()}
         </p>
       </div>
     </div>
