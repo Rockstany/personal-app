@@ -42,7 +42,9 @@ export async function getHabitsByUser(userId, view = 'active') {
   return await query(
     `SELECT h.*,
             hc.status as today_status,
-            hc.date as last_completion_date
+            hc.date as last_completion_date,
+            (SELECT COUNT(*) FROM habit_skip_days
+             WHERE habit_id = h.id AND status = 'available') as skip_days_count
      FROM habits h
      LEFT JOIN habit_completions hc ON h.id = hc.habit_id AND hc.date = ?
      ${whereClause}

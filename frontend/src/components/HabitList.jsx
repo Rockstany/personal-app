@@ -44,6 +44,8 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
           showToast('🎉 Great job! Habit marked as done!', 'success');
         } else if (status === 'skip') {
           showToast('⏭️ Skip day used successfully', 'info');
+        } else if (status === 'not_done') {
+          showToast('❌ Habit marked as not done', 'info');
         }
       }
       onUpdate();
@@ -253,10 +255,21 @@ function HabitList({ habits, onUpdate, showToast, viewMode = 'active' }) {
                           ✅ Done
                         </button>
                         <button
-                          onClick={() => loadSkipDays(habit.id)}
-                          className="btn btn-skip"
+                          onClick={() => {
+                            if (habit.skip_days_count > 0) {
+                              loadSkipDays(habit.id);
+                            }
+                          }}
+                          className={`btn btn-skip ${habit.skip_days_count === 0 ? 'disabled' : ''}`}
+                          disabled={habit.skip_days_count === 0}
                         >
-                          ⏭️ Skip
+                          ⏭️ Skip ({habit.skip_days_count || 0})
+                        </button>
+                        <button
+                          onClick={() => handleComplete(habit.id, 'not_done')}
+                          className="btn btn-not-done"
+                        >
+                          ❌ Not Done
                         </button>
                       </>
                     )}

@@ -165,9 +165,30 @@
   box-shadow: 0 2px 8px rgba(255, 169, 77, 0.3);
 }
 
-.btn-skip:hover {
+.btn-skip:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 169, 77, 0.4);
+}
+
+.btn-skip:disabled,
+.btn-skip.disabled {
+  background: #BDBDBD;
+  color: #757575;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.btn-not-done {
+  background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
+  color: #424242;
+  box-shadow: 0 2px 8px rgba(189, 189, 189, 0.3);
+}
+
+.btn-not-done:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(189, 189, 189, 0.4);
+  background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 100%);
 }
 
 .btn-delete {

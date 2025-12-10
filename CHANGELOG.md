@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] - 2024-12-10
+
+### ✨ Features Added
+- **Not Done Button**
+  - Added manual "Not Done" button for users to explicitly mark habits as not completed
+  - Gray gradient styling to distinguish from other actions
+  - Provides user control over habit status instead of just automatic marking
+
+- **Skip Days Counter**
+  - Skip button now displays available skip days count: "Skip (2)"
+  - Button automatically disables when skip count is 0
+  - Visual feedback with grayed-out disabled state
+  - Backend query optimized to include skip_days_count
+
+### 🎨 Design Improvements
+- Disabled skip button styling with reduced opacity
+- New gray gradient for "Not Done" button
+- Better button spacing with flex-wrap layout
+
+---
+
 ## [1.1.0] - 2024-12-10
 
 ### ✨ Features Added
