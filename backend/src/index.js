@@ -5,6 +5,10 @@ import authRoutes from './routes/authRoutes.js';
 import habitRoutes from './routes/habitRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import systemRoutes from './routes/systemRoutes.js';
+import accountRoutes from './routes/accountRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
+import recurringRoutes from './routes/recurringRoutes.js';
 import { startAutoNotDoneJob } from './jobs/autoNotDone.js';
 
 dotenv.config();
@@ -27,6 +31,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/money/accounts', accountRoutes);
+app.use('/api/money/categories', categoryRoutes);
+app.use('/api/money/transactions', transactionRoutes);
+app.use('/api/money/recurring', recurringRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

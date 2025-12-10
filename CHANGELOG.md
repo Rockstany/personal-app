@@ -7,6 +7,164 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2024-12-10
+
+### ✨ Features Added - Money Tracker Phase 1
+
+#### 💰 Core Money Management
+- **Multiple Account Support**
+  - Create and manage unlimited accounts (Bank, Cash, Credit Card, Wallet, Investment, Business, Crypto)
+  - Track individual account balances in real-time
+  - Visual account cards with custom icons and colors
+  - Account type indicators with emoji icons
+  - Bank details (name, account number, credit limit, due date)
+  - Total balance calculation across all accounts
+  - Soft delete for data preservation
+
+- **Transaction Management**
+  - Add income and expense transactions
+  - Transaction form with all essential fields (amount, date, category, account, payment method, description)
+  - Payment method tracking (Cash, Credit Card, Debit Card, UPI, Bank Transfer, Wallet, Cheque, Crypto, Other)
+  - Transaction type toggle (Income/Expense)
+  - Real-time account balance updates
+  - Transaction list with filtering capabilities
+  - Delete transactions with confirmation
+
+- **Category System**
+  - Default income categories (Salary, Freelance, Gift, Investment Returns, Business, Refund, Other Income)
+  - Default expense categories (Food & Dining, Rent & Bills, Transportation, Shopping, Entertainment, Healthcare, Education, Clothing, Subscriptions, Other Expenses)
+  - Create custom categories with icons and colors
+  - Edit and delete custom categories
+  - Category type segregation (Income/Expense)
+  - Visual category management UI
+
+- **Recurring Transactions**
+  - Set up automatic recurring income and expenses
+  - Frequency options (Daily, Weekly, Monthly, Yearly)
+  - Custom start and end dates
+  - Auto-add functionality for automatic transaction creation
+  - Reminder system (configurable days before due)
+  - Pause/Resume recurring transactions
+  - Process recurring transactions manually
+  - View all recurring transactions with status indicators
+  - Delete recurring transactions
+
+- **Financial Reports & Analytics**
+  - Multiple report timeframes (Today, Week, Month, Year, Custom range)
+  - Summary cards showing total income, expenses, and net balance
+  - Category breakdown with visual progress bars
+  - Percentage calculations for spending analysis
+  - Account-wise breakdown showing balances and transaction counts
+  - Income vs Expense comparison
+  - Visual indicators for surplus/deficit
+  - Color-coded charts (Green for income, Red for expenses)
+
+#### 🎨 UI/UX Enhancements
+- **Money Dashboard**
+  - Main dashboard with tabbed navigation
+  - Quick stats overview (Today's income, expenses, balance)
+  - Account switcher for quick access
+  - Filter options (All accounts, specific account, date range)
+  - Responsive layout for mobile and desktop
+
+- **Component Design**
+  - Gradient card designs matching app theme
+  - Icon-based visual language
+  - Smooth transitions and hover effects
+  - Empty states with helpful hints
+  - Loading states for async operations
+  - Error handling with user-friendly messages
+
+- **Money Tab Integration**
+  - New "💰 Money" tab in main navigation
+  - Seamless integration with existing Habits and Tasks features
+  - Toast notifications for success/error feedback
+  - Consistent styling with app design system
+
+### 🔧 Technical Implementation
+
+#### Backend Architecture
+- **Database Schema**
+  - 5 new tables: accounts, money_categories, transactions, recurring_transactions, transfers
+  - Foreign key relationships for data integrity
+  - Indexes for optimized queries
+  - DECIMAL(12,2) for precise money calculations
+  - Timestamp tracking for all records
+  - Soft delete support with is_active flags
+
+- **Models Layer**
+  - accountModel.js - CRUD operations for accounts
+  - categoryModel.js - Category management
+  - transactionModel.js - Transaction operations with balance updates
+  - recurringModel.js - Recurring transaction logic
+  - transferModel.js - Money transfers between accounts
+
+- **Controllers**
+  - accountController.js - Account endpoints
+  - categoryController.js - Category endpoints
+  - transactionController.js - Transaction endpoints with reporting
+  - recurringController.js - Recurring transaction endpoints
+
+- **API Routes**
+  - /api/money/accounts - Account management
+  - /api/money/categories - Category operations
+  - /api/money/transactions - Transaction CRUD and reports
+  - /api/money/recurring - Recurring transaction management
+
+#### Frontend Architecture
+- **Services**
+  - moneyService.js - API communication layer for all money operations
+  - Axios-based HTTP client with JWT authentication
+  - Error handling and response formatting
+
+- **Components**
+  - MoneyDashboard.jsx - Main container with state management
+  - AddTransaction.jsx - Transaction creation form with recurring options
+  - ManageAccounts.jsx - Account CRUD interface
+  - ManageCategories.jsx - Category management UI
+  - RecurringTransactions.jsx - Recurring transaction list and controls
+  - MoneyReports.jsx - Financial reports and charts
+
+- **Styling**
+  - Money.css - Comprehensive styles for all money components
+  - Gradient color schemes (Purple for cards, Green for income, Red for expenses)
+  - Responsive grid layouts
+  - Mobile-first design approach
+  - Smooth animations and transitions
+
+### 📝 Files Added/Modified
+
+**Database:**
+- backend/database/money_schema.sql
+- backend/database/seed_money_categories.sql
+
+**Backend (9 files):**
+- backend/src/models/accountModel.js
+- backend/src/models/categoryModel.js
+- backend/src/models/transactionModel.js
+- backend/src/models/recurringModel.js
+- backend/src/models/transferModel.js
+- backend/src/controllers/accountController.js
+- backend/src/controllers/categoryController.js
+- backend/src/controllers/transactionController.js
+- backend/src/controllers/recurringController.js
+
+**Frontend (7 files):**
+- frontend/src/services/moneyService.js
+- frontend/src/components/MoneyDashboard.jsx
+- frontend/src/components/AddTransaction.jsx
+- frontend/src/components/ManageAccounts.jsx
+- frontend/src/components/ManageCategories.jsx
+- frontend/src/components/RecurringTransactions.jsx
+- frontend/src/components/MoneyReports.jsx
+- frontend/src/styles/Money.css
+
+**Integration:**
+- frontend/src/pages/Dashboard.jsx - Added Money tab
+- backend/src/index.js - Registered money routes
+
+---
+
 ## [1.1.1] - 2024-12-10
 
 ### ✨ Features Added

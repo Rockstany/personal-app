@@ -10,6 +10,7 @@ import CreateHabit from '../components/CreateHabit';
 import CreateTask from '../components/CreateTask';
 import Reports from '../components/Reports';
 import SystemStatus from '../components/SystemStatus';
+import MoneyDashboard from '../components/MoneyDashboard';
 import Toast from '../components/Toast';
 import '../styles/Dashboard.css';
 
@@ -248,6 +249,12 @@ function Dashboard() {
             ✅ Daily Tasks
           </button>
           <button
+            onClick={() => setActiveTab('money')}
+            className={`tab ${activeTab === 'money' ? 'active' : ''}`}
+          >
+            💰 Money
+          </button>
+          <button
             onClick={() => setActiveTab('reports')}
             className={`tab ${activeTab === 'reports' ? 'active' : ''}`}
           >
@@ -369,6 +376,12 @@ function Dashboard() {
           </div>
         )}
 
+        {activeTab === 'money' && (
+          <div className="content-wrapper">
+            <MoneyDashboard showToast={showToast} />
+          </div>
+        )}
+
         {activeTab === 'reports' && (
           <div className="content-wrapper">
             <Reports showToast={showToast} />
@@ -383,7 +396,7 @@ function Dashboard() {
       </div>
 
       <footer className="footer">
-        <div className="footer-version">v1.1.1</div>
+        <div className="footer-version">v1.2.0</div>
         <div className="footer-contact">Contact us</div>
         <a href="tel:7899015086" className="footer-phone">
           📞 7899015086
