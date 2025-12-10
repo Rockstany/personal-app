@@ -234,15 +234,16 @@ export async function getPeriodSummary(userId, startDate, endDate) {
   );
 
   const totalAccountBalance = parseFloat(accountBalanceResult[0]?.total_account_balance || 0);
+  const transactionIncome = income?.total || 0;
 
-  // Total income = current account balance (which already includes all transactions)
-  const totalIncome = totalAccountBalance;
+  // Total income = account balance + transaction income
+  const totalIncome = totalAccountBalance + transactionIncome;
 
   console.log('=== PERIOD SUMMARY DEBUG ===');
   console.log('Total Account Balance:', totalAccountBalance);
-  console.log('Transaction Income:', income?.total || 0);
+  console.log('Transaction Income:', transactionIncome);
   console.log('Transaction Expenses:', expense?.total || 0);
-  console.log('Displayed Income (= Account Balance):', totalIncome);
+  console.log('Total Income (Account + Transactions):', totalIncome);
 
   return {
     income: totalIncome,
@@ -251,7 +252,7 @@ export async function getPeriodSummary(userId, startDate, endDate) {
     income_count: income?.count || 0,
     expense_count: expense?.count || 0,
     account_balance: totalAccountBalance, // Total from all accounts
-    transaction_income: income?.total || 0 // Income from transactions only
+    transaction_income: transactionIncome // Income from transactions only
   };
 }
 
