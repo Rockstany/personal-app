@@ -23,7 +23,7 @@ function SystemStatus({ showToast }) {
 
   const loadSystemStatus = async () => {
     try {
-      const response = await api.get('/api/system/status');
+      const response = await api.get('/system/status');
       setSystemData(response.data);
       setLoading(false);
     } catch (error) {
