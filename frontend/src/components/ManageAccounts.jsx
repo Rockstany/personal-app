@@ -39,17 +39,30 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log('=== CREATE ACCOUNT DEBUG ===');
+      console.log('Form Data:', formData);
+      console.log('API URL:', import.meta.env.VITE_API_URL);
+      console.log('Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
+
       if (editingAccount) {
-        await moneyService.accounts.update(editingAccount.id, formData);
+        const response = await moneyService.accounts.update(editingAccount.id, formData);
+        console.log('Update response:', response);
         showToast('✅ Account updated successfully!', 'success');
       } else {
-        await moneyService.accounts.create(formData);
+        const response = await moneyService.accounts.create(formData);
+        console.log('Create response:', response);
         showToast('✅ Account created successfully!', 'success');
       }
       resetForm();
       onUpdate();
     } catch (error) {
-      console.error('Save account error:', error);
+      console.error('=== SAVE ACCOUNT ERROR ===');
+      console.error('Full error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error message:', error.message);
+      console.error('Error status:', error.response?.status);
+
       const errorMsg = error.response?.data?.error || error.message || 'Failed to save account';
       showToast(`❌ ${errorMsg}`, 'error');
     }

@@ -34,12 +34,21 @@ function MoneyDashboard({ showToast }) {
   const loadData = async () => {
     try {
       setLoading(true);
+      console.log('=== LOADING MONEY DATA ===');
+      console.log('API URL:', import.meta.env.VITE_API_URL);
+      console.log('Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
+
       const [accountsRes, categoriesRes, todayRes, dueRes] = await Promise.all([
         moneyService.accounts.getAll(),
         moneyService.categories.getAll(),
         moneyService.transactions.getDailySummary(),
         moneyService.recurring.getDue()
       ]);
+
+      console.log('Accounts:', accountsRes.data);
+      console.log('Categories:', categoriesRes.data);
+      console.log('Today Summary:', todayRes.data);
+      console.log('Due Recurring:', dueRes.data);
 
       setAccounts(accountsRes.data || []);
       setCategories(categoriesRes.data || []);
@@ -48,7 +57,11 @@ function MoneyDashboard({ showToast }) {
 
       await loadTransactions();
     } catch (error) {
-      console.error('Error loading money data:', error);
+      console.error('=== ERROR LOADING MONEY DATA ===');
+      console.error('Full error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error status:', error.response?.status);
       showToast('Failed to load money data', 'error');
     } finally {
       setLoading(false);
