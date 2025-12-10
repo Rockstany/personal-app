@@ -238,6 +238,13 @@ export async function getPeriodSummary(userId, startDate, endDate) {
   // Total income = opening balance (initial capital) + all income transactions
   const totalIncome = totalOpeningBalance + (income?.total || 0);
 
+  console.log('=== PERIOD SUMMARY DEBUG ===');
+  console.log('Opening Balance:', totalOpeningBalance);
+  console.log('Transaction Income:', income?.total || 0);
+  console.log('Total Income:', totalIncome);
+  console.log('Expenses:', expense?.total || 0);
+  console.log('Balance:', totalIncome - (expense?.total || 0));
+
   return {
     income: totalIncome,
     expense: expense?.total || 0,
