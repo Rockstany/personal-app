@@ -252,7 +252,11 @@ export async function getPeriodSummary(userId, startDate, endDate) {
     income_count: income?.count || 0,
     expense_count: expense?.count || 0,
     account_balance: totalAccountBalance, // Total from all accounts
-    transaction_income: transactionIncome // Income from transactions only
+    transaction_income: transactionIncome, // Income from transactions only
+    // Also return with alternative field names for reports compatibility
+    total_income: totalIncome,
+    total_expense: expense?.total || 0,
+    net_balance: totalIncome - (expense?.total || 0)
   };
 }
 

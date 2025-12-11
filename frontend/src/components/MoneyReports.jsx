@@ -51,28 +51,33 @@ function MoneyReports({ showToast }) {
   const handleReportTypeChange = (type) => {
     setReportType(type);
     const today = new Date();
+    const endDate = new Date();
     let start;
 
     switch (type) {
       case 'daily':
-        start = today;
+        start = new Date();
         break;
       case 'weekly':
-        start = new Date(today.setDate(today.getDate() - 7));
+        start = new Date();
+        start.setDate(start.getDate() - 7);
         break;
       case 'monthly':
-        start = new Date(today.setMonth(today.getMonth() - 1));
+        start = new Date();
+        start.setMonth(start.getMonth() - 1);
         break;
       case 'yearly':
-        start = new Date(today.setFullYear(today.getFullYear() - 1));
+        start = new Date();
+        start.setFullYear(start.getFullYear() - 1);
         break;
       default:
-        start = new Date(today.setDate(today.getDate() - 7));
+        start = new Date();
+        start.setDate(start.getDate() - 7);
     }
 
     setDateRange({
       start: start.toISOString().split('T')[0],
-      end: new Date().toISOString().split('T')[0]
+      end: endDate.toISOString().split('T')[0]
     });
   };
 

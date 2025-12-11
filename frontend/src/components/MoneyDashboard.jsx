@@ -12,7 +12,7 @@ function MoneyDashboard({ showToast }) {
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [todaySummary, setTodaySummary] = useState({ income: 0, expense: 0, balance: 0 });
+  const [monthlySummary, setMonthlySummary] = useState({ income: 0, expense: 0, balance: 0 });
   const [dueRecurring, setDueRecurring] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -46,12 +46,18 @@ function MoneyDashboard({ showToast }) {
 
       // Load additional data only if on dashboard view
       if (activeView === 'dashboard') {
-        const [todayRes, dueRes] = await Promise.all([
-          moneyService.transactions.getDailySummary(),
+        // Calculate current month date range
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const startDate = firstDayOfMonth.toISOString().split('T')[0];
+        const endDate = today.toISOString().split('T')[0];
+
+        const [monthlyRes, dueRes] = await Promise.all([
+          moneyService.transactions.getPeriodSummary(startDate, endDate),
           moneyService.recurring.getDue()
         ]);
 
-        setTodaySummary(todayRes.data || { income: 0, expense: 0, balance: 0 });
+        setMonthlySummary(monthlyRes.data || { income: 0, expense: 0, balance: 0 });
         setDueRecurring(dueRes.data || []);
 
         await loadTransactions();
@@ -173,27 +179,27 @@ function MoneyDashboard({ showToast }) {
       {/* Dashboard View */}
       {activeView === 'dashboard' && (
         <div className="dashboard-view">
-          {/* Today's Summary */}
+          {/* Monthly Summary */}
           <div className="summary-cards">
             <div className="summary-card income">
               <div className="summary-icon">💰</div>
               <div className="summary-content">
-                <div className="summary-label">Today's Income</div>
-                <div className="summary-value">{formatCurrency(todaySummary.income)}</div>
+                <div className="summary-label">This Month's Income</div>
+                <div className="summary-value">{formatCurrency(monthlySummary.income)}</div>
               </div>
             </div>
             <div className="summary-card expense">
               <div className="summary-icon">💸</div>
               <div className="summary-content">
-                <div className="summary-label">Today's Expense</div>
-                <div className="summary-value">{formatCurrency(todaySummary.expense)}</div>
+                <div className="summary-label">This Month's Expense</div>
+                <div className="summary-value">{formatCurrency(monthlySummary.expense)}</div>
               </div>
             </div>
             <div className="summary-card balance">
               <div className="summary-icon">📊</div>
               <div className="summary-content">
-                <div className="summary-label">Today's Balance</div>
-                <div className="summary-value">{formatCurrency(todaySummary.balance)}</div>
+                <div className="summary-label">This Month's Balance</div>
+                <div className="summary-value">{formatCurrency(monthlySummary.balance)}</div>
               </div>
             </div>
           </div>
