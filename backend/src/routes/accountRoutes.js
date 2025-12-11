@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/', authenticate, accountController.createAccountHandler);
 router.get('/', authenticate, accountController.getAccountsHandler);
 router.get('/total-balance', authenticate, accountController.getTotalBalanceHandler);
+router.get('/stats', authenticate, accountController.getAccountStatsHandler);
 router.post('/recalculate-all', authenticate, accountController.recalculateAllBalancesHandler);
 router.post('/:id/recalculate', authenticate, accountController.recalculateBalanceHandler);
 router.get('/:id', authenticate, accountController.getAccountHandler);

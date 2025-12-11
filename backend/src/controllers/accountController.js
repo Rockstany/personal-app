@@ -108,3 +108,19 @@ export async function recalculateAllBalancesHandler(req, res) {
     res.status(500).json({ error: 'Failed to recalculate balances' });
   }
 }
+
+export async function getAccountStatsHandler(req, res) {
+  try {
+    const { start_date, end_date } = req.query;
+
+    if (!start_date || !end_date) {
+      return res.status(400).json({ error: 'start_date and end_date are required' });
+    }
+
+    const stats = await accountModel.getAccountStats(req.userId, start_date, end_date);
+    res.json(stats);
+  } catch (error) {
+    console.error('Get account stats error:', error);
+    res.status(500).json({ error: 'Failed to fetch account stats' });
+  }
+}

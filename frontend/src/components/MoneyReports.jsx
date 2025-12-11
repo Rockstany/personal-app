@@ -27,7 +27,7 @@ function MoneyReports({ showToast }) {
       const [summaryRes, categoryRes, accountsRes] = await Promise.all([
         moneyService.transactions.getPeriodSummary(dateRange.start, dateRange.end),
         moneyService.categories.getStats(dateRange.start, dateRange.end),
-        moneyService.accounts.getAll()
+        moneyService.accounts.getStats(dateRange.start, dateRange.end)
       ]);
 
       console.log('Summary:', summaryRes.data);

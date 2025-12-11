@@ -83,13 +83,13 @@ export async function deleteCategory(categoryId, userId) {
 export async function getCategoryStats(userId, startDate, endDate, type = null) {
   let sql = `
     SELECT
-      mc.id,
-      mc.name,
+      mc.id as category_id,
+      mc.name as category_name,
       mc.icon,
       mc.color,
       mc.type,
-      COUNT(t.id) as transaction_count,
-      COALESCE(SUM(t.amount), 0) as total_amount
+      COUNT(t.id) as count,
+      COALESCE(SUM(t.amount), 0) as total
     FROM money_categories mc
     LEFT JOIN transactions t ON mc.id = t.category_id
       AND t.user_id = ?
@@ -106,8 +106,8 @@ export async function getCategoryStats(userId, startDate, endDate, type = null) 
   }
 
   sql += ` GROUP BY mc.id, mc.name, mc.icon, mc.color, mc.type
-           HAVING transaction_count > 0
-           ORDER BY total_amount DESC`;
+           HAVING count > 0
+           ORDER BY total DESC`;
 
   return await query(sql, params);
 }

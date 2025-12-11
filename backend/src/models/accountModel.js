@@ -129,6 +129,30 @@ export async function getTotalBalance(userId) {
   return result[0]?.total || 0;
 }
 
+export async function getAccountStats(userId, startDate, endDate) {
+  const sql = `
+    SELECT
+      a.id as account_id,
+      a.account_name,
+      a.account_type,
+      a.icon,
+      a.balance,
+      COUNT(t.id) as transaction_count,
+      COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END), 0) as total_income,
+      COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) as total_expense
+    FROM accounts a
+    LEFT JOIN transactions t ON a.id = t.account_id
+      AND t.user_id = ?
+      AND t.deleted_at IS NULL
+      AND t.transaction_date BETWEEN ? AND ?
+    WHERE a.user_id = ? AND a.is_active = TRUE
+    GROUP BY a.id, a.account_name, a.account_type, a.icon, a.balance
+    ORDER BY a.balance DESC
+  `;
+
+  return await query(sql, [userId, startDate, endDate, userId]);
+}
+
 export async function recalculateAccountBalance(accountId, userId) {
   // Get the account's opening balance
   const accountResult = await query(

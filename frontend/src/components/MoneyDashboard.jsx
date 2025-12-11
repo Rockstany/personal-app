@@ -29,7 +29,7 @@ function MoneyDashboard({ showToast }) {
     if (activeView === 'dashboard') {
       loadTransactions();
     }
-  }, [filters]);
+  }, [filters, activeView]);
 
   const loadData = async () => {
     try {
@@ -73,13 +73,23 @@ function MoneyDashboard({ showToast }) {
 
   const loadTransactions = async () => {
     try {
+      console.log('=== LOADING TRANSACTIONS ===');
+      console.log('Filters:', filters);
+
       const res = await moneyService.transactions.getAll({
         ...filters,
         limit: 50
       });
-      setTransactions(res.data);
+
+      console.log('Transactions response:', res.data);
+      console.log('Number of transactions:', res.data?.length);
+
+      setTransactions(res.data || []);
     } catch (error) {
-      console.error('Error loading transactions:', error);
+      console.error('=== TRANSACTION LOADING ERROR ===');
+      console.error('Error:', error);
+      console.error('Error response:', error.response);
+      showToast('Failed to load transactions', 'error');
     }
   };
 
@@ -292,15 +302,15 @@ function MoneyDashboard({ showToast }) {
                 transactions.map(transaction => (
                   <div key={transaction.id} className="transaction-item">
                     <div className="transaction-left">
-                      <span className="transaction-icon" style={{ backgroundColor: transaction.category_color }}>
-                        {transaction.category_icon}
+                      <span className="transaction-icon" style={{ backgroundColor: transaction.category_color || '#667eea' }}>
+                        {transaction.category_icon || '💰'}
                       </span>
                       <div className="transaction-details">
-                        <div className="transaction-category">{transaction.category_name}</div>
-                        <div className="transaction-description">{transaction.description}</div>
+                        <div className="transaction-category">{transaction.category_name || 'Unknown'}</div>
+                        <div className="transaction-description">{transaction.description || 'No description'}</div>
                         <div className="transaction-meta">
-                          <span className="transaction-account">{transaction.account_name}</span>
-                          <span className="transaction-payment">{transaction.payment_method}</span>
+                          <span className="transaction-account">{transaction.account_name || 'Unknown Account'}</span>
+                          <span className="transaction-payment">{transaction.payment_method || 'cash'}</span>
                         </div>
                       </div>
                     </div>
@@ -309,7 +319,7 @@ function MoneyDashboard({ showToast }) {
                         className={`transaction-amount ${transaction.type}`}
                         style={{ color: transaction.type === 'income' ? '#4caf50' : '#f44336' }}
                       >
-                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount || 0)}
                       </div>
                       <div className="transaction-date">{formatDate(transaction.transaction_date)}</div>
                       <button

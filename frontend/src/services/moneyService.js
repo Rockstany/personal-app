@@ -10,7 +10,11 @@ export const moneyService = {
     delete: (id) => api.delete(`/money/accounts/${id}`),
     getTotalBalance: () => api.get('/money/accounts/total-balance'),
     recalculate: (id) => api.post(`/money/accounts/${id}/recalculate`),
-    recalculateAll: () => api.post('/money/accounts/recalculate-all')
+    recalculateAll: () => api.post('/money/accounts/recalculate-all'),
+    getStats: (startDate, endDate) =>
+      api.get('/money/accounts/stats', {
+        params: { start_date: startDate, end_date: endDate }
+      })
   },
 
   // Category APIs
