@@ -239,12 +239,6 @@ export async function getPeriodSummary(userId, startDate, endDate) {
   // Total income = account balance + transaction income
   const totalIncome = totalAccountBalance + transactionIncome;
 
-  console.log('=== PERIOD SUMMARY DEBUG ===');
-  console.log('Total Account Balance:', totalAccountBalance);
-  console.log('Transaction Income:', transactionIncome);
-  console.log('Transaction Expenses:', expense?.total || 0);
-  console.log('Total Income (Account + Transactions):', totalIncome);
-
   return {
     income: totalIncome,
     expense: expense?.total || 0,

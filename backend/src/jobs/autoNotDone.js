@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import { query } from '../config/database.js';
 import { getToday } from '../utils/levelCalculator.js';
+import logger from '../utils/logger.js';
 
 export async function markHabitsAsNotDone() {
   const today = getToday();
@@ -24,11 +25,11 @@ export async function markHabitsAsNotDone() {
       );
     }
 
-    console.log(`Auto marked ${habitsWithoutCompletion.length} habits as not_done for ${today}`);
+    logger.info(`Auto marked ${habitsWithoutCompletion.length} habits as not_done for ${today}`);
 
     await expireSkipDays();
   } catch (error) {
-    console.error('Error in auto not done job:', error);
+    logger.error('Error in auto not done job', { error: error.message });
   }
 }
 
@@ -44,17 +45,17 @@ export async function expireSkipDays() {
       [today]
     );
 
-    console.log(`Expired ${result.affectedRows} skip days`);
+    logger.info(`Expired ${result.affectedRows} skip days`);
   } catch (error) {
-    console.error('Error expiring skip days:', error);
+    logger.error('Error expiring skip days', { error: error.message });
   }
 }
 
 export function startAutoNotDoneJob() {
   cron.schedule('59 23 * * *', async () => {
-    console.log('Running auto not done job at 11:59 PM');
+    logger.info('Running auto not done job at 11:59 PM');
     await markHabitsAsNotDone();
   });
 
-  console.log('Auto not done cron job scheduled for 11:59 PM daily');
+  logger.info('Auto not done cron job scheduled for 11:59 PM daily');
 }

@@ -39,18 +39,11 @@ function ManageAccounts({ accounts, onUpdate, showToast }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('=== CREATE ACCOUNT DEBUG ===');
-      console.log('Form Data:', formData);
-      console.log('API URL:', import.meta.env.VITE_API_URL);
-      console.log('Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
-
       if (editingAccount) {
-        const response = await moneyService.accounts.update(editingAccount.id, formData);
-        console.log('Update response:', response);
+        await moneyService.accounts.update(editingAccount.id, formData);
         showToast('✅ Account updated successfully!', 'success');
       } else {
-        const response = await moneyService.accounts.create(formData);
-        console.log('Create response:', response);
+        await moneyService.accounts.create(formData);
         showToast('✅ Account created successfully!', 'success');
       }
       resetForm();

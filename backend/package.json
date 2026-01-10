@@ -1,7 +1,7 @@
 {
   "name": "backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.2.0",
+  "description": "Habit & Daily Tracker API with Money Management",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

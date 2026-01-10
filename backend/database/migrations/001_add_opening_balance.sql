@@ -1,7 +1,6 @@
 -- Migration: Add opening_balance column to accounts table
 -- Run this SQL directly in your MySQL database
-
-USE personal_tracker;
+-- NOTE: Make sure you are connected to your database before running this migration
 
 -- Step 1: Add the opening_balance column
 ALTER TABLE accounts

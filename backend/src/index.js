@@ -10,6 +10,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import recurringRoutes from './routes/recurringRoutes.js';
 import { startAutoNotDoneJob } from './jobs/autoNotDone.js';
+import logger from './utils/logger.js';
 
 dotenv.config();
 
@@ -37,11 +38,17 @@ app.use('/api/money/transactions', transactionRoutes);
 app.use('/api/money/recurring', recurringRoutes);
 
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  logger.error('Unhandled error', {
+    error: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    path: req.path,
+    method: req.method
+  });
   res.status(500).json({ error: 'Internal server error' });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
   startAutoNotDoneJob();
 });

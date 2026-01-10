@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS accounts (
   account_name VARCHAR(100) NOT NULL,
   account_type ENUM('cash', 'bank', 'credit_card', 'wallet', 'investment', 'business', 'crypto') NOT NULL,
   balance DECIMAL(12, 2) DEFAULT 0.00,
+  opening_balance DECIMAL(12, 2) DEFAULT 0.00,
   bank_name VARCHAR(100),
   account_number VARCHAR(50),
   credit_limit DECIMAL(12, 2),
