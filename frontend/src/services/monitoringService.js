@@ -1,4 +1,10 @@
-import api from './api';
+import axios from 'axios';
+
+// Use a separate axios instance to avoid circular dependency with api.js interceptors
+const monitoringApi = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  headers: { 'Content-Type': 'application/json' }
+});
 
 class MonitoringService {
   constructor() {
@@ -154,8 +160,8 @@ class MonitoringService {
   // Log to backend (async, non-blocking)
   async logToBackend(type, data) {
     try {
-      // Don't wait for response, fire and forget
-      api.post('/monitoring/log', {
+      // Use separate axios instance to avoid triggering api.js interceptors (infinite loop)
+      monitoringApi.post('/monitoring/log', {
         type,
         data,
         userAgent: navigator.userAgent,
